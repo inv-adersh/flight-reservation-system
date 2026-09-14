@@ -89,7 +89,7 @@ class RouteOptimizer:
         self.graph = FlightGraph()
         self.graph.build_graph()
 
-    def shortest_distance_dijkstra(self, source_iata: str, dest_iata: str, cabin_class: str = "ECONOMY") -> Dict[str, Any]:
+    def shortest_distance_dijkstra(self, source_iata: str, dest_iata: str, cabin_class: str = "ECONOMY", active_flight_numbers: Optional[set] = None) -> Dict[str, Any]:
         """
         Find the route with the minimum travel distance (in km) using Dijkstra's algorithm.
         """
@@ -141,6 +141,10 @@ class RouteOptimizer:
 
             # Traverse neighbors
             for neighbor, data in self.graph.adj_list[current_node].items():
+                valid_legs = [l for l in data["legs"] if active_flight_numbers is None or l.flight.flight_no in active_flight_numbers]
+                if not valid_legs:
+                    continue
+
                 distance = data["distance"]
                 new_dist = current_dist + distance
 
@@ -150,7 +154,7 @@ class RouteOptimizer:
                     new_path = list(path)
                     new_path.append(
                         {
-                            "legs": data["legs"],
+                            "legs": valid_legs,
                             "distance": distance,
                         }
                     )
@@ -158,7 +162,7 @@ class RouteOptimizer:
 
         return {"error": f"No active route found between {source_iata} and {dest_iata}."}
 
-    def minimum_stops_bfs(self, source_iata: str, dest_iata: str, cabin_class: str = "ECONOMY") -> Dict[str, Any]:
+    def minimum_stops_bfs(self, source_iata: str, dest_iata: str, cabin_class: str = "ECONOMY", active_flight_numbers: Optional[set] = None) -> Dict[str, Any]:
         """
         Find the route with the fewest flight connections using BFS.
         """
@@ -195,15 +199,18 @@ class RouteOptimizer:
                 }
 
             for neighbor, data in self.graph.adj_list[current_node].items():
+                valid_legs = [l for l in data["legs"] if active_flight_numbers is None or l.flight.flight_no in active_flight_numbers]
+                if not valid_legs:
+                    continue
                 if neighbor not in visited:
                     visited.add(neighbor)
                     new_path = list(path)
-                    new_path.append({"legs": data["legs"]})
+                    new_path.append({"legs": valid_legs})
                     queue.append((neighbor, new_path))
                     
         return {"error": f"No active route found between {source_iata} and {dest_iata}."}
 
-    def fastest_route_dijkstra(self, source_iata: str, dest_iata: str, cabin_class: str = "ECONOMY") -> Dict[str, Any]:
+    def fastest_route_dijkstra(self, source_iata: str, dest_iata: str, cabin_class: str = "ECONOMY", active_flight_numbers: Optional[set] = None) -> Dict[str, Any]:
         """
         Find the route with the minimum travel time using Dijkstra's algorithm.
         """
@@ -248,8 +255,12 @@ class RouteOptimizer:
                 continue
 
             for neighbor, data in self.graph.adj_list[current_node].items():
+                valid_legs = [l for l in data["legs"] if active_flight_numbers is None or l.flight.flight_no in active_flight_numbers]
+                if not valid_legs:
+                    continue
+                    
                 # Find the leg with the minimum duration
-                best_leg = min(data["legs"], key=lambda l: l.flight_duration_minutes + l.layover_duration_minutes)
+                best_leg = min(valid_legs, key=lambda l: l.flight_duration_minutes + l.layover_duration_minutes)
                 
                 # Standard duration calculation
                 duration = best_leg.flight_duration_minutes + best_leg.layover_duration_minutes
@@ -269,7 +280,7 @@ class RouteOptimizer:
 
         return {"error": f"No active route found between {source_iata} and {dest_iata}."}
 
-    def cheapest_route_dijkstra(self, source_iata: str, dest_iata: str, cabin_class: str = "ECONOMY") -> Dict[str, Any]:
+    def cheapest_route_dijkstra(self, source_iata: str, dest_iata: str, cabin_class: str = "ECONOMY", active_flight_numbers: Optional[set] = None) -> Dict[str, Any]:
         """
         Find the route with the minimum total ticket price using Dijkstra's algorithm.
         """
@@ -314,6 +325,10 @@ class RouteOptimizer:
                 continue
 
             for neighbor, data in self.graph.adj_list[current_node].items():
+                valid_legs = [l for l in data["legs"] if active_flight_numbers is None or l.flight.flight_no in active_flight_numbers]
+                if not valid_legs:
+                    continue
+
                 # We need to find the leg with the minimum price
                 best_leg = None
                 min_price = float('inf')
@@ -322,7 +337,7 @@ class RouteOptimizer:
                 if req_class not in ["ECONOMY", "BUSINESS", "FIRST"]:
                     req_class = "ECONOMY"
 
-                for leg in data["legs"]:
+                for leg in valid_legs:
                     # Find base price, fallback logic
                     fare_class = next((fc for fc in leg.flight.fare_classes.all() if fc.cabin_class == req_class), None)
                     if not fare_class:

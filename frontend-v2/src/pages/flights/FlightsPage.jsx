@@ -293,6 +293,7 @@ export default function FlightsPage() {
   const cabinClassParam = searchParams.get("cabinClass") || "Economy";
 
   const [flights, setFlights] = useState([]);
+  const [apiBadges, setApiBadges] = useState(null);
   const [recommendedRoutes, setRecommendedRoutes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -385,7 +386,10 @@ export default function FlightsPage() {
         const response = await flightsAPI.list(currentPage, queryParams);
         let results = response.results || response || [];
         const apiTotal = typeof response.count === "number" ? response.count : results.length;
-        if (isMounted) setTotalCount(apiTotal);
+        if (isMounted) {
+          setTotalCount(apiTotal);
+          setApiBadges(response.route_optimization?.badges || null);
+        }
 
         // 0. Exclude departed flights (status DEPARTED/ARRIVED or departure_time in past)
         const now = new Date();
@@ -593,36 +597,6 @@ export default function FlightsPage() {
                 ? "BUSINESS" : (cabinClassParam || "Economy").toUpperCase().includes("FIRST")
                   ? "FIRST" : "ECONOMY";
 
-              const getFare = (f) => {
-                const fares = f.fares;
-                if (!fares) return Number(f.base_fare || 0);
-                if (Array.isArray(fares)) {
-                  const active = fares.find((x) => x.cabin_class?.toUpperCase().includes(normCab)) || fares[0];
-                  return Number(active?.display_price || active?.price || 0);
-                }
-                if (typeof fares === "object") {
-                  const active = fares[normCab] || fares["ECONOMY"] || Object.values(fares)[0];
-                  return Number(active?.display_price || active?.price || 0);
-                }
-                return Number(f.base_fare || 0);
-              };
-
-              const getDuration = (f) => {
-                const depIso = f.departure_time || f.scheduled_departure;
-                const arrIso = f.arrival_time || f.scheduled_arrival;
-                if (depIso && arrIso) {
-                  const d = new Date(arrIso) - new Date(depIso);
-                  return isNaN(d) ? Infinity : d;
-                }
-                return Infinity;
-              };
-
-              const getStops = (f) => {
-                if (Array.isArray(f.stops)) return f.stops.length;
-                if (typeof f.stops === "number") return f.stops;
-                return 0;
-              };
-
               const assignedBadges = new Map();
               const addBadge = (id, badge) => {
                 if (!assignedBadges.has(id)) assignedBadges.set(id, []);
@@ -631,46 +605,21 @@ export default function FlightsPage() {
                 }
               };
 
-              const fares = flights.map(f => ({
-                id: f.id,
-                fare: getFare(f),
-                dur: getDuration(f),
-                stops: getStops(f)
-              }));
-
-              // Assign comparative badges only if there are multiple flights to compare
-              if (flights.length > 1) {
-                // 1. Cheapest (Lowest Fare > 0)
-                const cheapest = [...fares].filter(x => x.fare > 0).sort((a, b) => a.fare - b.fare)[0];
-                if (cheapest) {
-                  addBadge(cheapest.id, "Cheapest");
-                }
-
-                // 2. Fastest (Shortest Total Duration)
-                const fastest = [...fares].filter(x => x.dur !== Infinity).sort((a, b) => a.dur - b.dur)[0];
-                if (fastest) {
-                  addBadge(fastest.id, "Fastest");
-                }
-
-                // 3. Stops / Distance Badge ("Direct" if 0 layovers, or "Shortest" if layovers exist)
-                const minStopsCount = Math.min(...fares.map(x => x.stops));
-                if (minStopsCount === 0) {
-                  const unbadgedDirect = fares.find(x => x.stops === 0 && (!assignedBadges.has(x.id) || !assignedBadges.get(x.id).includes("Direct")));
-                  if (unbadgedDirect) {
-                    addBadge(unbadgedDirect.id, "Direct");
-                  }
-                } else {
-                  const unbadgedShortest = fares.find(x => x.stops === minStopsCount && (!assignedBadges.has(x.id) || !assignedBadges.get(x.id).includes("Shortest")));
-                  if (unbadgedShortest) {
-                    addBadge(unbadgedShortest.id, "Shortest");
+              flights.forEach((flight) => {
+                const flightNo = flight.flight_number;
+                const stops = Array.isArray(flight.stops) ? flight.stops.length : (typeof flight.stops === "number" ? flight.stops : 0);
+                
+                if (apiBadges) {
+                  if (apiBadges.cheapest_flight_no === flightNo) addBadge(flight.id, "Cheapest");
+                  if (apiBadges.fastest_flight_no === flightNo) addBadge(flight.id, "Fastest");
+                  
+                  if (stops > 0 && (apiBadges.min_stops_flight_no === flightNo || apiBadges.shortest_distance_flight_no === flightNo)) {
+                    addBadge(flight.id, "Min Distance"); 
                   }
                 }
-              }
 
-              // 4. Non-stop flights get "Direct" badge
-              fares.forEach(x => {
-                if (x.stops === 0) {
-                  addBadge(x.id, "Direct");
+                if (stops === 0) {
+                  addBadge(flight.id, "Direct");
                 }
               });
 

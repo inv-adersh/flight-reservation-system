@@ -336,11 +336,14 @@ class FlightListCreateView(APIView):
 
                 if direct_count > 0:
                     # Direct flights found — run all 4 algorithms silently to generate badge hints
+                    # We pass active_flight_numbers so the graph traversal only considers routes available today
+                    active_flight_numbers = set(qs.values_list('flight__flight_no', flat=True))
                     req_class = class_key or "ECONOMY"
-                    cheapest = optimizer.cheapest_route_dijkstra(source, destination, cabin_class=req_class)
-                    fastest = optimizer.fastest_route_dijkstra(source, destination, cabin_class=req_class)
-                    min_stops = optimizer.minimum_stops_bfs(source, destination, cabin_class=req_class)
-                    shortest = optimizer.shortest_distance_dijkstra(source, destination, cabin_class=req_class)
+                    
+                    cheapest = optimizer.cheapest_route_dijkstra(source, destination, cabin_class=req_class, active_flight_numbers=active_flight_numbers)
+                    fastest = optimizer.fastest_route_dijkstra(source, destination, cabin_class=req_class, active_flight_numbers=active_flight_numbers)
+                    min_stops = optimizer.minimum_stops_bfs(source, destination, cabin_class=req_class, active_flight_numbers=active_flight_numbers)
+                    shortest = optimizer.shortest_distance_dijkstra(source, destination, cabin_class=req_class, active_flight_numbers=active_flight_numbers)
 
                     # Extract the top-level flight_no from each result for badge matching
                     def first_flight_no(result):

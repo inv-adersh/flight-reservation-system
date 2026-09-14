@@ -155,6 +155,7 @@ export default function FlightCard({ flight, selectedCabinClass = "Economy", onV
                   "Fewest Stops": "commit",
                   "Shortest": "route",
                   "Shortest Distance": "route",
+                  "Min Distance": "route",
                 }[badge] || "star";
                 return (
                   <span key={badge} className="inline-flex items-center gap-1 text-[9px] font-extrabold text-slate-900 bg-white border border-slate-200 px-2 py-1 rounded-lg tracking-wide shadow-sm">
@@ -343,6 +344,7 @@ export default function FlightCard({ flight, selectedCabinClass = "Economy", onV
                 "Fewest Stops": "commit",
                 "Shortest": "route",
                 "Shortest Distance": "route",
+                "Min Distance": "route",
               }[badge] || "star";
               return (
                 <span key={badge} className="inline-flex items-center gap-0.5 text-[8px] font-extrabold text-slate-900 bg-white border border-slate-200 px-1.5 py-0.5 rounded-md tracking-wide shadow-sm">
