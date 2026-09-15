@@ -7,12 +7,14 @@ import CustomSelect from "@/components/ui/CustomSelect";
 import SingleDatePickerModal from "@/components/ui/SingleDatePickerModal";
 import { formatDisplayDate } from "@/components/ui/DatePickerModal";
 import { PASSWORD_RULES } from "@/utils/validators";
+import { useTranslation } from "react-i18next";
 
 export default function RegisterPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
   const { loading } = useSelector((state) => state.auth);
+  const { t } = useTranslation();
 
   const fromDestination = location.state?.from;
 
@@ -274,7 +276,7 @@ export default function RegisterPage() {
 
       {/* Header */}
       <div className="relative z-10 text-center mb-4">
-        <h2 className="text-xl font-bold text-slate-800">Create an Account</h2>
+        <h2 className="text-xl font-bold text-slate-800">{t('auth.createAccount')}</h2>
       </div>
 
       {/* Container Card */}
@@ -299,7 +301,7 @@ export default function RegisterPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-semibold text-slate-600 mb-2 ml-2">
-                First name
+                {t('auth.firstName')}
               </label>
               <input
                 ref={inputRefs.first_name}
@@ -308,7 +310,7 @@ export default function RegisterPage() {
                 value={formData.first_name}
                 onChange={handleChange}
                 onBlur={handleBlur}
-                placeholder="First name"
+                placeholder={t('auth.placeholders.first')}
                 className="input-field"
               />
               {errors.first_name && (
@@ -320,7 +322,7 @@ export default function RegisterPage() {
 
             <div>
               <label className="block text-xs font-semibold text-slate-600 mb-2 ml-2">
-                Last name
+                {t('auth.lastName')}
               </label>
               <input
                 ref={inputRefs.last_name}
@@ -329,7 +331,7 @@ export default function RegisterPage() {
                 value={formData.last_name}
                 onChange={handleChange}
                 onBlur={handleBlur}
-                placeholder="Last name"
+                placeholder={t('auth.placeholders.last')}
                 className="input-field"
               />
               {errors.last_name && (
@@ -344,7 +346,7 @@ export default function RegisterPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-semibold text-slate-600 mb-2 ml-2">
-                Gender
+                {t('auth.gender')}
               </label>
               <CustomSelect
                 value={formData.gender}
@@ -355,7 +357,7 @@ export default function RegisterPage() {
 
             <div>
               <label className="block text-xs font-semibold text-slate-600 mb-2 ml-2">
-                Date of Birth
+                {t('profile.dob')}
               </label>
               <button
                 ref={inputRefs.date_of_birth}
@@ -380,7 +382,7 @@ export default function RegisterPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-semibold text-slate-600 mb-2 ml-2">
-                Username
+                {t('auth.username')}
               </label>
               <input
                 ref={inputRefs.username}
@@ -389,7 +391,7 @@ export default function RegisterPage() {
                 value={formData.username}
                 onChange={handleChange}
                 onBlur={handleBlur}
-                placeholder="Choose username"
+                placeholder={t('auth.placeholders.username')}
                 className="input-field"
               />
               {errors.username && (
@@ -401,7 +403,7 @@ export default function RegisterPage() {
 
             <div>
               <label className="block text-xs font-semibold text-slate-600 mb-2 ml-2">
-                Email
+                {t('auth.email')}
               </label>
               <input
                 ref={inputRefs.email}
@@ -410,7 +412,7 @@ export default function RegisterPage() {
                 value={formData.email}
                 onChange={handleChange}
                 onBlur={handleBlur}
-                placeholder="your@email.com"
+                placeholder={t('auth.placeholders.email')}
                 className="input-field"
               />
               {errors.email && (
@@ -424,7 +426,7 @@ export default function RegisterPage() {
           {/* Password with Collapsible Vertical Live Strength Checklist */}
           <div>
             <label className="block text-xs font-semibold text-slate-600 mb-2 ml-2">
-              Password
+              {t('auth.password')}
             </label>
             <div className="relative flex items-center">
               <input
@@ -435,7 +437,7 @@ export default function RegisterPage() {
                 onChange={handleChange}
                 onFocus={handlePasswordFocus}
                 onBlur={handleBlur}
-                placeholder="Create a strong password"
+                placeholder={t('auth.placeholders.password')}
                 className="input-field"
               />
               <button
@@ -482,7 +484,7 @@ export default function RegisterPage() {
           {/* Confirm Password */}
           <div>
             <label className="block text-xs font-semibold text-slate-600 mb-2 ml-2">
-              Confirm Password
+              {t('auth.confirmPassword')}
             </label>
             <div className="relative flex items-center">
               <input
@@ -492,7 +494,7 @@ export default function RegisterPage() {
                 value={formData.confirm_password}
                 onChange={handleChange}
                 onBlur={handleBlur}
-                placeholder="Repeat your password"
+                placeholder={t('auth.placeholders.confirm')}
                 className="input-field pr-16"
               />
               <div className="absolute right-3.5 flex items-center gap-1.5">
@@ -526,14 +528,7 @@ export default function RegisterPage() {
               disabled={loading}
               className="btn-primary px-5 py-2 rounded-xl text-sm"
             >
-              {loading ? (
-                <>
-                  <span className="w-4 h-4 border-2 border-slate-900 border-t-transparent rounded-full animate-spin" />
-                  Creating account...
-                </>
-              ) : (
-                "Create account"
-              )}
+              {loading ? t('auth.creatingAccount') : t('auth.createAccountBtn')}
             </button>
           </div>
 
@@ -542,9 +537,9 @@ export default function RegisterPage() {
         {/* Footer Link */}
         <div className="mt-8 text-center pt-5 border-t border-slate-100">
           <p className="text-xs font-semibold text-slate-500">
-            Already have an account?{" "}
+            {t('auth.alreadyHaveAccount')}{" "}
             <Link to="/login" state={{ from: fromDestination }} className="text-slate-900 font-bold hover:underline transition-all">
-              Sign In
+              {t('auth.signInInstead')}
             </Link>
           </p>
         </div>

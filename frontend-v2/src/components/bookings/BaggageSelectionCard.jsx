@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { formatCurrency as fmtCurr } from "@/utils/formatters";
 
 export default function BaggageSelectionCard({
@@ -6,6 +7,7 @@ export default function BaggageSelectionCard({
   baggageInfo = {},
   onBaggageChange,
 }) {
+  const { t } = useTranslation();
   const cabinBaggageKg = baggageInfo.cabin_baggage_kg ?? 20;
   const handbagKg = baggageInfo.handbag_kg ?? 7;
   const maxExtraKg = baggageInfo.max_extra_baggage_kg_per_person ?? 20;
@@ -24,10 +26,10 @@ export default function BaggageSelectionCard({
           </div>
           <div>
             <h3 className="text-xl font-bold text-slate-950">
-              Baggage Add-ons
+              {t('baggage.baggageAddons')}
             </h3>
             <p className="pt-1 text-[10px] text-slate-500 font-medium">
-              Review included allowances and add extra check-in baggage for your trip
+              {t('baggage.baggageAddonsDesc')}
             </p>
           </div>
         </div>
@@ -44,18 +46,18 @@ export default function BaggageSelectionCard({
       {/* Passenger Extra Baggage Selection List */}
       <div className="space-y-4">
         {passengers.map((p, paxIdx) => {
-          const paxName = p.name?.trim() ? p.name.trim() : `Passenger ${paxIdx + 1}`;
+          const paxName = p.name?.trim() ? p.name.trim() : t('passenger.passengerNum', { num: paxIdx + 1 });
           const currentExtraKg = Math.max(0, parseInt(p.extra_baggage_kg || 0, 10));
           const passengerExtraCost = currentExtraKg * pricePerKg;
 
           const genderRaw = (p.gender || "").toUpperCase();
           const genderLabel =
             genderRaw === "F" || genderRaw === "FEMALE"
-              ? "Female"
+              ? t('passenger.female')
               : genderRaw === "M" || genderRaw === "MALE"
-                ? "Male"
+                ? t('passenger.male')
                 : genderRaw === "O" || genderRaw === "OTHER"
-                  ? "Other"
+                  ? t('passenger.other')
                   : null;
           const ageLabel = p.age ? `${p.age} yrs` : null;
           const metaText = [genderLabel, ageLabel].filter(Boolean).join(", ");
@@ -78,7 +80,7 @@ export default function BaggageSelectionCard({
 
                 <div className="flex items-center gap-1 text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200/60 flex-shrink-0">
                   <span className="material-symbols-outlined text-xs">check_circle</span>
-                  <span>{cabinBaggageKg} kg + {handbagKg} kg Included</span>
+                  <span>{cabinBaggageKg} kg + {handbagKg} kg {t('baggage.included')}</span>
                 </div>
               </div>
 
@@ -87,10 +89,10 @@ export default function BaggageSelectionCard({
                 <div>
                   <h5 className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
                     <span className="material-symbols-outlined text-sm text-slate-500">add_shopping_cart</span>
-                    Add Extra Luggage
+                    {t('baggage.addExtraLuggage')}
                   </h5>
                   <p className="text-[10px] font-medium text-slate-500 mt-0.5">
-                    Select in whole 1 kg steps (Up to {maxExtraKg} kg max)
+                    {t('baggage.extraLuggageSteps', { max: maxExtraKg })}
                   </p>
                 </div>
 
@@ -125,7 +127,7 @@ export default function BaggageSelectionCard({
               {currentExtraKg > 0 && (
                 <div className="flex items-center justify-between bg-amber-50/70 border border-amber-200/80 px-3 py-2 rounded-xl text-xs mt-2">
                   <span className="font-semibold text-amber-900">
-                    Extra Luggage: +{currentExtraKg} kg
+                    {t('baggage.extraLuggageCost', { kg: currentExtraKg })}
                   </span>
                   <span className="font-bold text-amber-950">
                     + {formatCurrency(passengerExtraCost)}

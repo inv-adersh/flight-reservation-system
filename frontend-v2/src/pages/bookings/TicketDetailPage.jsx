@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 import { bookingAPI } from "@/services/booking-service/bookingService";
 import { waitlistAPI } from "@/services/waitlist-service/waitlistService";
 import TicketInvoice from "@/components/bookings/TicketInvoice";
 import toast from "react-hot-toast";
 
 export default function TicketDetailPage() {
+  const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
@@ -90,7 +92,7 @@ export default function TicketDetailPage() {
       await bookingAPI.downloadPdf(detailData.id, refCode);
       toast.success('Ticket PDF downloaded!');
     } catch (err) {
-      toast.error(err.message || 'Failed to download PDF.');
+      toast.error(err.message || t('ticketDetail.downloadFailed'));
     } finally {
       setPdfLoading(false);
     }
@@ -101,7 +103,7 @@ export default function TicketDetailPage() {
     return (
       <div className="flex-1 min-h-screen bg-slate-50/60 pt-20 pb-16 px-4 max-w-3xl mx-auto w-full flex flex-col items-center justify-center">
         <div className="w-12 h-12 rounded-full border-4 border-slate-300 border-t-slate-900 animate-spin mb-4" />
-        <p className="text-sm font-semibold text-slate-600">Loading Ticket Details...</p>
+        <p className="text-sm font-semibold text-slate-600">{t('ticketDetail.loading')}</p>
       </div>
     );
   }
@@ -116,13 +118,13 @@ export default function TicketDetailPage() {
           className="text-xs font-semibold text-slate-600 hover:text-slate-950 cursor-pointer transition-colors flex items-center gap-1.5"
         >
           <span className="material-symbols-outlined text-base">arrow_back</span>
-          Back to bookings
+          {t('ticketDetail.backToBookings')}
         </button>
 
         <div className="flex items-center gap-3">
           {bookedAtText && (
             <span className="text-xs font-semibold text-slate-500">
-              Booked at {bookedAtText}
+              {t('ticketDetail.bookedAt', { time: bookedAtText })}
             </span>
           )}
 
@@ -139,7 +141,7 @@ export default function TicketDetailPage() {
               ) : (
                 <span className="material-symbols-outlined text-sm">download</span>
               )}
-              {pdfLoading ? 'Generating…' : 'Download PDF'}
+              {pdfLoading ? t('ticketDetail.generatingPdf') : t('ticketDetail.downloadPdf')}
             </button>
           )}
         </div>
@@ -176,7 +178,7 @@ export default function TicketDetailPage() {
             className="btn-danger text-xs px-4 py-2.5 rounded-2xl flex items-center gap-2 animate-fade-in"
           >
             <span className="material-symbols-outlined text-base">cancel</span>
-            Cancel Ticket
+            {t('ticketDetail.cancelTicket')}
           </button>
         </div>
       )}

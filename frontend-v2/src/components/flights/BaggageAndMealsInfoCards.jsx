@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 export default function BaggageAndMealsInfoCards({
   checkedBaggageKg = 20,
@@ -8,6 +9,7 @@ export default function BaggageAndMealsInfoCards({
   title,
   className = "",
 }) {
+  const { t } = useTranslation();
   if (!summary) {
     return (
       <div className={`space-y-5 ${className}`}>
@@ -28,7 +30,7 @@ export default function BaggageAndMealsInfoCards({
                 {checkedBaggageKg} kg
               </span>
               <span className="text-[10px] font-semibold text-slate-500 block mt-0.5 truncate">
-                Checked Baggage
+                {t('baggage.checkedBaggage')}
               </span>
             </div>
           </div>
@@ -43,7 +45,7 @@ export default function BaggageAndMealsInfoCards({
                 {handbagKg} kg
               </span>
               <span className="text-[10px] font-semibold text-slate-500 block mt-0.5 truncate">
-                Cabin Handbag
+                {t('baggage.cabinHandbag')}
               </span>
             </div>
           </div>
@@ -59,10 +61,10 @@ export default function BaggageAndMealsInfoCards({
             </div>
             <div className="flex flex-col items-center">
               <span className="text-xs font-bold text-slate-950 block leading-tight truncate">
-                {mealIncluded ? "Meal Provided" : "Buy Onboard"}
+                {mealIncluded ? t('baggage.mealProvided') : t('baggage.buyOnboard')}
               </span>
               <span className="text-[10px] font-semibold text-slate-500 block mt-0.5 truncate">
-                {mealIncluded ? "Complimentary" : "In-Flight Selection"}
+                {mealIncluded ? t('baggage.complimentary') : t('baggage.inFlightSelection')}
               </span>
             </div>
           </div>
@@ -84,7 +86,7 @@ export default function BaggageAndMealsInfoCards({
               {checkedBaggageKg} kg
             </span>
             <span className="text-[10px] font-semibold text-slate-500 block mt-0.5 truncate">
-              Checked Baggage
+              {t('baggage.checkedBaggage')}
             </span>
           </div>
         </div>
@@ -99,7 +101,7 @@ export default function BaggageAndMealsInfoCards({
               {handbagKg} kg
             </span>
             <span className="text-[10px] font-semibold text-slate-500 block mt-0.5 truncate">
-              Cabin Handbag
+              {t('baggage.cabinHandbag')}
             </span>
           </div>
         </div>
@@ -115,10 +117,10 @@ export default function BaggageAndMealsInfoCards({
           </div>
           <div className="min-w-0 flex flex-col items-center">
             <span className="text-xs font-bold text-slate-950 block leading-tight truncate">
-              {mealIncluded ? "Provided" : "None"}
+              {mealIncluded ? t('baggage.provided') : t('baggage.none')}
             </span>
             <span className="text-[10px] font-semibold text-slate-500 block mt-0.5 truncate">
-              {mealIncluded ? "Complimentary" : "In-Flight Selection"}
+              {mealIncluded ? t('baggage.complimentary') : t('baggage.inFlightSelection')}
             </span>
           </div>
         </div>

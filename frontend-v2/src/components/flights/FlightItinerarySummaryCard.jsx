@@ -1,7 +1,9 @@
+import { useTranslation } from "react-i18next";
 import { getAirportInfo } from "@/utils/airportHelpers";
 import BaggageAndMealsInfoCards from "@/components/flights/BaggageAndMealsInfoCards";
 
 export default function FlightItinerarySummaryCard({ flight, selectedCabinClass = "ECONOMY" }) {
+  const { t } = useTranslation();
   if (!flight) return null;
 
   const {
@@ -51,7 +53,12 @@ export default function FlightItinerarySummaryCard({ flight, selectedCabinClass 
 
   const durationStr = calculateDuration(depTime, arrTime);
   const stopCount = Array.isArray(stops) ? stops.length : typeof stops === "number" ? stops : 0;
-  const stopsStr = stopCount === 0 ? "Non-stop" : `${stopCount} Stop${stopCount > 1 ? "s" : ""}`;
+  const stopsStr =
+    stopCount === 0
+      ? t('flightItinerary.nonStop')
+      : stopCount === 1
+        ? t('flightItinerary.stop', { count: stopCount })
+        : t('flightItinerary.stops', { count: stopCount });
 
   const getLogoUrl = (url) => {
     if (!url) return null;
@@ -128,7 +135,7 @@ export default function FlightItinerarySummaryCard({ flight, selectedCabinClass 
         handbagKg={handbagKg}
         mealIncluded={isMealInc}
         summary={true}
-        title="Baggage & In-Flight Services"
+        title={t('flightItinerary.baggageAndServices')}
         className="pt-4 border-t border-slate-200/80"
       />
     </div>

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
+import { useTranslation } from "react-i18next";
 import { flightsAPI } from "@/services/flight-service/flightService";
 import { bookingAPI } from "@/services/booking-service/bookingService";
 import { waitlistAPI } from "@/services/waitlist-service/waitlistService";
@@ -18,6 +19,7 @@ import toast from "react-hot-toast";
 import { fetchNotifications } from "../../store/notificationsSlice";
 
 export default function BookingCheckoutPage() {
+  const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
@@ -46,14 +48,14 @@ export default function BookingCheckoutPage() {
           id: Date.now() + i,
           name: p.name || "",
           age: p.age || "",
-          gender: p.gender === "M" ? "Male" : p.gender === "F" ? "Female" : p.gender === "O" ? "Other" : p.gender || "Male",
+          gender: p.gender === "M" ? t('passenger.male') : p.gender === "F" ? t('passenger.female') : p.gender === "O" ? t('passenger.other') : p.gender || t('passenger.male'),
           extra_baggage_kg: 0,
         }))
       : Array.from({ length: initialSeatCount }, (_, i) => ({
           id: Date.now() + i,
           name: "",
           age: "",
-          gender: "Male",
+          gender: t('passenger.male'),
           extra_baggage_kg: 0,
         }))
   );
@@ -110,7 +112,7 @@ export default function BookingCheckoutPage() {
         setMealsData(mealsResp);
       } catch (err) {
         console.error("Failed to load flight details:", err);
-        toast.error("Flight not found or unavailable.");
+        toast.error(t('checkout.flightNotFound'));
       } finally {
         setLoading(false);
       }
@@ -255,15 +257,15 @@ export default function BookingCheckoutPage() {
 
   // Dynamically define stepper steps
   const steps = [
-    { id: "passengers", title: "Passengers", subtitle: "Passenger Details" },
+    { id: "passengers", title: t('checkout.stepPassengers'), subtitle: t('checkout.stepPassengersSubtitle') },
     ...(!isWaitlisted
-      ? [{ id: "seat_selection", title: "Seats", subtitle: "Choose your seat" }]
+      ? [{ id: "seat_selection", title: t('checkout.stepSeats'), subtitle: t('checkout.stepSeatsSubtitle') }]
       : []),
     ...(hasMealsOrAddons
-      ? [{ id: "free_meal", title: "Meals & Menu", subtitle: "In-Flight Selection" }]
+      ? [{ id: "free_meal", title: t('checkout.stepMeals'), subtitle: t('checkout.stepMealsSubtitle') }]
       : []),
-    { id: "baggage", title: "Baggage", subtitle: "Extra Luggage" },
-    { id: "review", title: isWaitlisted ? "Waitlist" : "Payment", subtitle: isWaitlisted ? "Join Waitlist" : "Confirm Booking" },
+    { id: "baggage", title: t('checkout.stepBaggage'), subtitle: t('checkout.stepBaggageSubtitle') },
+    { id: "review", title: isWaitlisted ? t('checkout.stepWaitlist') : t('checkout.stepPayment'), subtitle: isWaitlisted ? t('checkout.stepWaitlistSubtitle') : t('checkout.stepPaymentSubtitle') },
   ];
 
   const currentStepObj = steps[currentStepIndex] || steps[0];
@@ -370,25 +372,25 @@ export default function BookingCheckoutPage() {
     paxList.forEach((p, idx) => {
       const pErr = {};
       if (!p.name || p.name.trim() === "") {
-        pErr.name = "Full name is required";
+        pErr.name = t('checkout.nameRequired');
         isValid = false;
         if (!firstInvalidKey) firstInvalidKey = `${idx}-name`;
       } else if (p.name.trim().length < 2) {
-        pErr.name = "Name must be at least 2 characters";
+        pErr.name = t('checkout.nameMinLength');
         isValid = false;
         if (!firstInvalidKey) firstInvalidKey = `${idx}-name`;
       } else if (p.name.trim().length > 150) {
-        pErr.name = "Name cannot exceed 150 characters";
+        pErr.name = t('checkout.nameMaxLength');
         isValid = false;
         if (!firstInvalidKey) firstInvalidKey = `${idx}-name`;
       }
 
       if (!p.age || p.age.toString().trim() === "") {
-        pErr.age = "Age is required";
+        pErr.age = t('checkout.ageRequired');
         isValid = false;
         if (!firstInvalidKey) firstInvalidKey = `${idx}-age`;
       } else if (isNaN(Number(p.age)) || Number(p.age) < 1 || Number(p.age) > 130) {
-        pErr.age = "Please enter a valid age (1-130)";
+        pErr.age = t('checkout.ageInvalid');
         isValid = false;
         if (!firstInvalidKey) firstInvalidKey = `${idx}-age`;
       }
@@ -430,17 +432,17 @@ export default function BookingCheckoutPage() {
 
       if (changedField === "name") {
         if (!p.name || p.name.trim() === "") {
-          fieldError = "Full name is required";
+          fieldError = t('checkout.nameRequired');
         } else if (p.name.trim().length < 2) {
-          fieldError = "Name must be at least 2 characters";
+          fieldError = t('checkout.nameMinLength');
         } else if (p.name.trim().length > 150) {
-          fieldError = "Name cannot exceed 150 characters";
+          fieldError = t('checkout.nameMaxLength');
         }
       } else if (changedField === "age") {
         if (!p.age || p.age.toString().trim() === "") {
-          fieldError = "Age is required";
+          fieldError = t('checkout.ageRequired');
         } else if (isNaN(Number(p.age)) || Number(p.age) < 1 || Number(p.age) > 130) {
-          fieldError = "Please enter a valid age (1-130)";
+          fieldError = t('checkout.ageInvalid');
         }
       }
 
@@ -469,17 +471,17 @@ export default function BookingCheckoutPage() {
 
     if (field === "name") {
       if (!p.name || p.name.trim() === "") {
-        fieldError = "Full name is required";
+        fieldError = t('checkout.nameRequired');
       } else if (p.name.trim().length < 2) {
-        fieldError = "Name must be at least 2 characters";
+        fieldError = t('checkout.nameMinLength');
       } else if (p.name.trim().length > 150) {
-        fieldError = "Name cannot exceed 150 characters";
+        fieldError = t('checkout.nameMaxLength');
       }
     } else if (field === "age") {
       if (!p.age || p.age.toString().trim() === "") {
-        fieldError = "Age is required";
+        fieldError = t('checkout.ageRequired');
       } else if (isNaN(Number(p.age)) || Number(p.age) < 1 || Number(p.age) > 130) {
-        fieldError = "Please enter a valid age (1-130)";
+        fieldError = t('checkout.ageInvalid');
       }
     }
 
@@ -501,7 +503,7 @@ export default function BookingCheckoutPage() {
       setPassengerErrors(newErrors);
 
       if (!isValid) {
-        toast.error("Please fix the highlighted passenger errors.");
+        toast.error(t('checkout.fixErrors'));
         if (firstInvalidKey && inputRefs.current[firstInvalidKey]) {
           inputRefs.current[firstInvalidKey].focus();
         }
@@ -594,7 +596,7 @@ export default function BookingCheckoutPage() {
         const response = await waitlistAPI.join(id, formattedPassengers, selectedCabin);
         //console.log(response);
         dispatch(fetchNotifications());
-        toast.success(`Successfully joined waitlist (Position #${response.queue_position || 1})!`);
+        toast.success(t('checkout.waitlistSuccess', { pos: response.queue_position || 1 }));
         navigate(`/booking-confirmation/waitlist/${response.id}`, {
           state: {
             ...location.state,
@@ -605,7 +607,7 @@ export default function BookingCheckoutPage() {
       } else {
         const response = await bookingAPI.create(id, formattedPassengers, selectedCabin);
         dispatch(fetchNotifications());
-        toast.success("Flight booking confirmed successfully!");
+        toast.success(t('checkout.bookingSuccess'));
         navigate(`/booking-confirmation/${response.id}`, {
           state: {
             ...location.state,
@@ -620,7 +622,7 @@ export default function BookingCheckoutPage() {
         err.message ||
         err.response?.data?.error ||
         err.response?.data?.detail ||
-        "Failed to process booking. Please try again.";
+        t('checkout.bookingFailed');
       toast.error(errMsg);
     } finally {
       setSubmitting(false);
@@ -637,10 +639,10 @@ export default function BookingCheckoutPage() {
           className="text-xs font-semibold text-slate-600 hover:text-slate-950 cursor-pointer transition-colors flex items-center gap-1.5"
         >
           <span className="material-symbols-outlined text-base">arrow_back</span>
-          Back to Flight Details
+          {t('checkout.backToFlightDetails')}
         </button>
         <h1 className="text-xl font-bold text-slate-950 mt-3">
-          {isWaitlisted ? "Join Waitlist" : "Confirm Booking"}
+          {isWaitlisted ? t('checkout.joinWaitlist') : t('checkout.confirmBooking')}
         </h1>
       </div>
 

@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
+import { useTranslation } from "react-i18next";
 import { formatCurrency as fmtCurr } from "@/utils/formatters";
 
 export default function FlightFilterDrawer({ isOpen, onClose, filters, onApplyFilters, onResetFilters, bounds, routeOptimization, activePill, onPillChange }) {
+  const { t } = useTranslation();
   const minPrice = Math.floor(bounds?.min || bounds?.min_price || 0);
   const maxPrice = Math.ceil(bounds?.max || bounds?.max_price || 100000);
   const displayCurrency = bounds?.currency || "INR";
@@ -102,7 +104,7 @@ export default function FlightFilterDrawer({ isOpen, onClose, filters, onApplyFi
               tune
             </span>
             <h2 className="text-lg font-bold text-slate-950">
-              Filters & Sorting
+              {t('flightFilter.title')}
             </h2>
           </div>
           <button
@@ -121,21 +123,21 @@ export default function FlightFilterDrawer({ isOpen, onClose, filters, onApplyFi
           {routeOptimization?.has_direct_flights === true && routeOptimization?.summary && (() => {
             const s = routeOptimization.summary;
             const insightPills = [
-              { id: "cheapest", icon: "sell", label: "Best Price",
+              { id: "cheapest", icon: "sell", label: t('flightFilter.bestPrice'),
                 sub: s.cheapest_price != null ? `\u20B9${Math.round(s.cheapest_price).toLocaleString()}` : null },
-              { id: "fastest", icon: "timer", label: "Fastest",
+              { id: "fastest", icon: "timer", label: t('flightFilter.fastest'),
                 sub: s.fastest_duration_minutes != null
                   ? `${Math.floor(s.fastest_duration_minutes / 60)}h ${s.fastest_duration_minutes % 60}m` : null },
-              { id: "min_stops", icon: "trip_origin", label: "Fewest Stops",
+              { id: "min_stops", icon: "trip_origin", label: t('flightFilter.fewestStops'),
                 sub: s.min_stops_count != null
-                  ? `${s.min_stops_count} stop${s.min_stops_count !== 1 ? "s" : ""}` : null },
-              { id: "shortest", icon: "straighten", label: "Shortest",
+                  ? `${s.min_stops_count} ${s.min_stops_count !== 1 ? t('flightFilter.stops') : t('flightFilter.stop')}` : null },
+              { id: "shortest", icon: "straighten", label: t('flightFilter.shortest'),
                 sub: s.shortest_distance_km != null
                   ? `${s.shortest_distance_km.toLocaleString()} km` : null },
             ];
             return (
               <div>
-                <h3 className="text-sm font-bold text-slate-900 mb-3">Route Insights</h3>
+                <h3 className="text-sm font-bold text-slate-900 mb-3">{t('flightFilter.routeInsights')}</h3>
                 <div className="grid grid-cols-2 gap-2">
                   {insightPills.map((pill) => {
                     const isSelected = activePill === pill.id;
@@ -175,13 +177,13 @@ export default function FlightFilterDrawer({ isOpen, onClose, filters, onApplyFi
           {/* 1. Sort By */}
           <div>
             <h3 className="text-sm font-bold text-slate-900 mb-3">
-              Sort By
+              {t('flightFilter.sortBy')}
             </h3>
             <div className="flex gap-2">
               {[
-                { label: "Cheapest First", value: "base_fare" },
-                { label: "Earliest Departure", value: "departure_time" },
-                { label: "Shortest Duration", value: "duration" }
+                { label: t('flightFilter.cheapestFirst'), value: "base_fare" },
+                { label: t('flightFilter.earliestDeparture'), value: "departure_time" },
+                { label: t('flightFilter.shortestDuration'), value: "duration" }
               ].map((option) => {
                 const isSelected = draftFilters.ordering === option.value;
                 return (
@@ -207,13 +209,13 @@ export default function FlightFilterDrawer({ isOpen, onClose, filters, onApplyFi
           {/* 2. Waitlisted Flights Filter */}
           <div>
             <h3 className="text-sm font-bold text-slate-900 mb-3">
-              Waitlisted Flights
+              {t('flightFilter.waitlistedFlights')}
             </h3>
             <div className="flex gap-2">
               {[
-                { label: "All Flights", value: "all" },
-                { label: "Hide Waitlisted", value: "available_only" },
-                { label: "Waitlist Only", value: "waitlisted_only" }
+                { label: t('flightFilter.allFlights'), value: "all" },
+                { label: t('flightFilter.hideWaitlisted'), value: "available_only" },
+                { label: t('flightFilter.waitlistOnly'), value: "waitlisted_only" }
               ].map((opt) => {
                 const isSelected = draftFilters.waitlistMode === opt.value;
                 return (
@@ -240,7 +242,7 @@ export default function FlightFilterDrawer({ isOpen, onClose, filters, onApplyFi
           <div>
             <div className="flex items-center justify-between mb-2">
               <h3 className="text-sm font-bold text-slate-900">
-                Max Price
+                {t('flightFilter.maxPrice')}
               </h3>
               <span className="text-xs font-bold text-slate-950 bg-slate-100 px-2.5 py-1 rounded-lg">
                 {draftFilters.maxFare >= maxPrice ? `${formatCurrency(maxPrice)}+` : formatCurrency(draftFilters.maxFare)}
@@ -266,10 +268,10 @@ export default function FlightFilterDrawer({ isOpen, onClose, filters, onApplyFi
           {/* 4. Stops */}
           <div>
             <h3 className="text-sm font-bold text-slate-900 mb-3">
-              Stops
+              {t('flightFilter.stopsLabel')}
             </h3>
             <div className="flex items-center gap-2">
-              {["Any", "Non-stop", "1 Stop", "2+ Stops"].map((stopOption, idx) => {
+              {[t('flightFilter.any'), t('flightFilter.nonStop'), t('flightFilter.oneStop'), t('flightFilter.twoPlus')].map((stopOption, idx) => {
                 const valueStr = idx === 0 ? "" : String(idx - 1);
                 const isSelected =
                   (draftFilters.stops === "" && idx === 0) || draftFilters.stops === valueStr;
@@ -296,7 +298,7 @@ export default function FlightFilterDrawer({ isOpen, onClose, filters, onApplyFi
           {/* 5. Airline Filter */}
           <div>
             <h3 className="text-sm font-bold text-slate-900 mb-3">
-              Airline
+              {t('flightFilter.airline')}
             </h3>
             <div className="space-y-2">
               {["Air India", "Lufthansa", "Etihad Airways", "IndiGo", "Air India Express"].map((airlineName) => {
@@ -335,14 +337,14 @@ export default function FlightFilterDrawer({ isOpen, onClose, filters, onApplyFi
             onClick={handleReset}
             className="flex-1 py-2.5 text-xs font-bold text-slate-700 hover:text-slate-950 bg-slate-200/70 hover:bg-slate-200 rounded-xl transition-all cursor-pointer"
           >
-            Reset
+            {t('flightFilter.reset')}
           </button>
           <button
             type="button"
             onClick={handleApply}
             className="flex-1 py-2.5 text-xs font-bold text-slate-950 bg-[#ffeb00] hover:bg-[#ebd800] rounded-xl shadow-xs transition-all cursor-pointer"
           >
-            Apply Filter
+            {t('flightFilter.applyFilter')}
           </button>
         </div>
       </div>

@@ -1,5 +1,6 @@
 import { useSelector } from "react-redux";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { formatCurrency as fmtCurr } from "@/utils/formatters";
 
 export default function FareDetailsCard({
@@ -12,6 +13,7 @@ export default function FareDetailsCard({
   onBookingAction,
   actionButtonText,
 }) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const auth = useSelector((state) => state?.auth) || {};
@@ -42,9 +44,9 @@ export default function FareDetailsCard({
 
   const getCabinLabel = (cabin) => {
     const norm = (cabin || "ECONOMY").toUpperCase();
-    if (norm.includes("BUSINESS")) return "Business Fare";
-    if (norm.includes("FIRST")) return "First Class Fare";
-    return "Economy Fare";
+    if (norm.includes("BUSINESS")) return t('fareDetails.businessFare');
+    if (norm.includes("FIRST")) return t('fareDetails.firstClassFare');
+    return t('fareDetails.economyFare');
   };
   const cabinLabel = getCabinLabel(selectedCabin);
 
@@ -63,34 +65,34 @@ export default function FareDetailsCard({
 
   const buttonText = !isAuthenticated
     ? isWaitlisted
-      ? "Login to Join Waitlist"
-      : "Login to Book Ticket"
-    : actionButtonText || (isWaitlisted ? "Join Waitlist" : "Book Ticket");
+      ? t('fareDetails.loginToJoinWaitlist')
+      : t('fareDetails.loginToBook')
+    : actionButtonText || (isWaitlisted ? t('fareDetails.joinWaitlist') : t('fareDetails.bookTicket'));
 
   return (
     <div className="booking-container-card w-full shadow-xs animate-fade-in transition-all duration-300">
       <h3 className="text-xl font-bold text-slate-950 mb-4">
-        Fare Details
+        {t('fareDetails.fareDetails')}
       </h3>
 
       {/* Breakdown Rows */}
       <div className="flex flex-col gap-2 text-xs font-medium text-slate-700">
         <div className="flex items-center justify-between">
-          <span>{cabinLabel} (per person)</span>
+          <span>{cabinLabel} {t('fareDetails.perPerson')}</span>
           <span className="text-slate-950 font-bold">
             {formatCurrency(unitFare)}
           </span>
         </div>
 
         <div className="flex items-center justify-between">
-          <span>Passengers</span>
+          <span>{t('fareDetails.passengers')}</span>
           <span className="text-slate-950">
             {passengerCount}
           </span>
         </div>
 
         <div className="flex items-center justify-between mt-3 pt-3 border-t border-slate-200/60">
-          <span>Total Base Fare</span>
+          <span>{t('fareDetails.totalBaseFare')}</span>
           <span className="text-slate-950 font-semibold">
             {formatCurrency(totalBaseFare)}
           </span>
@@ -100,7 +102,7 @@ export default function FareDetailsCard({
           <div className="flex items-center justify-between">
             <span className="flex items-center gap-1 text-amber-800 font-semibold">
               <span className="material-symbols-outlined text-sm">restaurant</span>
-              In-Flight Meals
+              {t('fareDetails.inFlightMeals')}
             </span>
             <span className="text-amber-900 font-bold">
               {formatCurrency(mealTotal)}
@@ -112,7 +114,7 @@ export default function FareDetailsCard({
           <div className="flex items-center justify-between">
             <span className="flex items-center gap-1 text-blue-800 font-semibold">
               <span className="material-symbols-outlined text-sm">airline_seat_recline_normal</span>
-              Seat Fare
+              {t('fareDetails.seatFare')}
             </span>
             <span className="text-blue-900 font-bold">
               {formatCurrency(seatTotal)}
@@ -124,7 +126,7 @@ export default function FareDetailsCard({
           <div className="flex items-center justify-between">
             <span className="flex items-center gap-1 text-indigo-800 font-semibold">
               <span className="material-symbols-outlined text-sm">luggage</span>
-              Extra Luggage
+              {t('fareDetails.extraLuggage')}
             </span>
             <span className="text-indigo-900 font-bold">
               {formatCurrency(extraBaggageTotal)}
@@ -133,7 +135,7 @@ export default function FareDetailsCard({
         )}
 
         <div className="flex items-center justify-between">
-          <span>GST (12%)</span>
+          <span>{t('fareDetails.gst')}</span>
           <span className="text-slate-950">
             {formatCurrency(gstAmount)}
           </span>
@@ -145,7 +147,7 @@ export default function FareDetailsCard({
 
       {/* Grand Total Amount */}
       <div className="flex flex-col items-end gap-1">
-        <span className="text-xs font-semibold text-slate-500">Grand Total</span>
+        <span className="text-xs font-semibold text-slate-500">{t('fareDetails.grandTotal')}</span>
         <span className="text-2xl font-bold text-slate-950">
           {formatCurrency(grandTotal)}
         </span>

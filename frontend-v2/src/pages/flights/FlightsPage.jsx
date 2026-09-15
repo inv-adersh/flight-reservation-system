@@ -10,10 +10,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchFlightBounds } from "@/store/flightSlice";
 import { clearComparison } from "@/store/comparisonSlice";
 import { formatCurrency } from "@/utils/formatters";
+import { useTranslation } from "react-i18next";
 
 
 // It receives four props
 function ConnectingRouteCard({ route, rankLabel, cabinClassParam, navigate }) {
+  const { t } = useTranslation();
   // Extract hops from route (support both hops structure and legacy route structure)
   const hops = route.hops || (route.route ? route.route.map((leg) => ({ options: [leg] })) : []);
 
@@ -22,6 +24,7 @@ function ConnectingRouteCard({ route, rankLabel, cabinClassParam, navigate }) {
 
   //This calculates total fare
   const totalFare = activeLegs.reduce((sum, leg) => sum + (leg.min_fare || 0), 0);
+
 
   // Time formatting helpers
   const fmtTime = (iso) => {
@@ -123,7 +126,7 @@ function ConnectingRouteCard({ route, rankLabel, cabinClassParam, navigate }) {
               }}
               className="px-4 py-2 rounded-xl text-xs font-bold btn-primary cursor-pointer shadow-sm whitespace-nowrap"
             >
-              Book Journey
+              {t('flightCard.bookJourney')}
             </button>
           )}
         </div>
@@ -271,7 +274,7 @@ function ConnectingRouteCard({ route, rankLabel, cabinClassParam, navigate }) {
                         : "bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200"
                       }`}
                   >
-                    {canBook ? "Book" : "Unavailable"}
+              {canBook ? t('flightCard.book') : t('flightCard.unavailable')}
                   </button>
                 </div>
               </div>
@@ -286,6 +289,7 @@ function ConnectingRouteCard({ route, rankLabel, cabinClassParam, navigate }) {
 export default function FlightsPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const from = searchParams.get("from") || "DEL";
   const to = searchParams.get("to") || "HAM";
@@ -564,7 +568,7 @@ export default function FlightsPage() {
                 }`}
             >
               <span className="material-symbols-outlined text-sm select-none">compare_arrows</span>
-              {compareMode ? "Exit Compare" : "Compare"}
+              {compareMode ? t('flightCard.exitCompare') : t('flightCard.compare_mode')}
             </button>
           )}
         </div>
@@ -731,8 +735,8 @@ export default function FlightsPage() {
                 <span className="material-symbols-outlined text-4xl text-slate-400 mb-2 select-none">
                   flight_takeoff
                 </span>
-                <p className="text-slate-800 font-bold text-base">No flights found</p>
-                <p className="text-slate-500 text-xs mt-1">There are no flights matching your search criteria from {from} to {to} on {depDate}.</p>
+                <p className="text-slate-800 font-bold text-base">{t('flightCard.noFlights')}</p>
+                <p className="text-slate-500 text-xs mt-1">{t('flightCard.noFlightsDesc', { from, to, date: depDate })}</p>
               </div>
             )}
           </div>
@@ -754,7 +758,7 @@ export default function FlightsPage() {
                 <span className="material-symbols-outlined text-amber-600 text-xl select-none">connecting_airports</span>
               </div>
               <div className="flex-1 min-w-0">
-                <h2 className="text-base font-extrabold text-slate-900 leading-tight">Sorry!  No Direct Flight Available</h2>
+                <h2 className="text-base font-extrabold text-slate-900 leading-tight">{t('flightCard.noDirectFlight')}</h2>
                 <p className="text-xs text-slate-500 mt-0.5">
                   {from} &rarr; {to} &bull; We found <strong>{recommendedRoutes.length} connecting route{recommendedRoutes.length !== 1 ? "s" : ""}</strong> for you
                 </p>
@@ -843,13 +847,13 @@ export default function FlightsPage() {
       {compareMode && selectedIds.length >= 2 && (
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-2xl border border-slate-700">
           <span className="material-symbols-outlined text-[#ffeb00] text-lg select-none">compare_arrows</span>
-          <span className="text-sm font-bold">{selectedIds.length} flights selected</span>
+          <span className="text-sm font-bold">{t('flightCard.selected', { count: selectedIds.length })}</span>
           <button
             type="button"
             onClick={() => setShowCompareModal(true)}
             className="px-4 py-1.5 text-xs font-bold rounded-xl bg-[#ffeb00] text-slate-900 hover:bg-yellow-300 transition-all cursor-pointer"
           >
-            Compare Now
+            {t('flightCard.compareNow')}
           </button>
           <button
             type="button"

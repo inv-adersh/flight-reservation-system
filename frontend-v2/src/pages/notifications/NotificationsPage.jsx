@@ -8,10 +8,12 @@ import {
 } from "@/store/notificationsSlice";
 import toast from "react-hot-toast";
 import { parseApiError } from "@/utils/errorUtils";
+import { useTranslation } from "react-i18next";
 
 export default function NotificationsPage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const { list, listLoading, listError, unreadCount } = useSelector(
     (state) => state?.notifications || { list: [], listLoading: false, listError: null, unreadCount: 0 }

@@ -1,7 +1,9 @@
+import { useTranslation } from "react-i18next";
 import FlightItineraryCard from "@/components/flights/FlightItineraryCard";
 import { formatCurrency as fmtCurr } from "@/utils/formatters";
 
 export default function TicketInvoice({ detailData, isWaitlist = false, locationStateFlight = null, locationStatePassengers = null }) {
+  const { t } = useTranslation();
   if (!detailData) return null;
 
   const flight = detailData?.flight_detail || detailData?.flight || locationStateFlight || {};
@@ -64,7 +66,7 @@ export default function TicketInvoice({ detailData, isWaitlist = false, location
     if (ticketStatus === "EXPIRED") {
       return (
         <span className="bg-slate-200 border border-slate-300 text-slate-700 px-3 py-1.5 rounded-xl text-xs font-extrabold flex items-center gap-1.5 shadow-2xs">
-          Expired
+          {t('invoice.expired')}
           <span className="material-symbols-outlined text-sm">hourglass_disabled</span>
         </span>
       );
@@ -73,7 +75,7 @@ export default function TicketInvoice({ detailData, isWaitlist = false, location
     if (ticketStatus === "CANCELLED") {
       return (
         <span className="bg-rose-100 border border-rose-300 text-rose-950 px-3 py-1.5 rounded-xl text-xs font-extrabold flex items-center gap-1.5 shadow-2xs">
-          Cancelled
+          {t('invoice.cancelled')}
           <span className="material-symbols-outlined text-sm">cancel</span>
         </span>
       );
@@ -82,7 +84,7 @@ export default function TicketInvoice({ detailData, isWaitlist = false, location
     if (isWaitlist) {
       return (
         <span className="bg-amber-100 border border-amber-300 text-amber-950 px-3 py-1.5 rounded-xl text-xs font-extrabold flex items-center gap-1.5 shadow-2xs">
-          {detailData?.queue_position ? `Waitlisted #${detailData.queue_position}` : "Waitlisted"}
+          {detailData?.queue_position ? t('invoice.waitlistedPos', { pos: detailData.queue_position }) : t('invoice.waitlisted')}
           <span className="material-symbols-outlined text-sm">hourglass_top</span>
         </span>
       );
@@ -90,7 +92,7 @@ export default function TicketInvoice({ detailData, isWaitlist = false, location
 
     return (
       <span className="bg-emerald-100 border border-emerald-300 text-emerald-950 px-3 py-1.5 rounded-xl text-xs font-extrabold flex items-center gap-1.5 shadow-2xs">
-        Confirmed
+        {t('invoice.confirmed')}
         <span className="material-symbols-outlined text-sm">check_circle</span>
       </span>
     );
@@ -102,7 +104,7 @@ export default function TicketInvoice({ detailData, isWaitlist = false, location
       <div className="flex flex-wrap items-center justify-between gap-4 pb-4 mx-5 border-b border-slate-300/80">
         <div>
           <span className="text-xs font-bold text-slate-500 tracking-wide block">
-            {isWaitlist ? "Waitlist ID" : "Booking ID"}
+            {isWaitlist ? t('invoice.waitlistId') : t('invoice.bookingId')}
           </span>
           <span className="text-sm font-bold text-slate-950">
             #{detailData?.id ? String(detailData.id).slice(0, 8).toUpperCase() : "BK-893041"}
@@ -137,7 +139,7 @@ export default function TicketInvoice({ detailData, isWaitlist = false, location
       {/* Passenger List Box */}
       <div className="px-5 pb-5 space-y-3">
         <h4 className="text-xs font-bold text-slate-500 tracking-wide mb-5">
-          Passenger Details ({passengers.length || seatCount})
+          {t('invoice.passengerDetails', { count: passengers.length || seatCount })}
         </h4>
         <div className="flex flex-col gap-3">
           {passengers.length > 0 ? (
@@ -161,10 +163,10 @@ export default function TicketInvoice({ detailData, isWaitlist = false, location
 
               const genderLabel =
                 p.gender === "F" || p.gender === "FEMALE"
-                  ? "Female"
+                  ? t('passenger.female')
                   : p.gender === "M" || p.gender === "MALE"
-                    ? "Male"
-                    : p.gender || "Passenger";
+                    ? t('passenger.male')
+                    : p.gender || t('passenger.passengerNum', { num: idx + 1 });
 
               const extraKg = Number(p.extra_baggage_kg || 0);
               const extraCost = Number(p.display_extra_baggage_cost || p.extra_baggage_cost || 0);
@@ -198,7 +200,7 @@ export default function TicketInvoice({ detailData, isWaitlist = false, location
                       </span>
                       <div className="min-w-0 flex-1">
                         <p className="font-bold text-slate-950 text-sm break-words [overflow-wrap:anywhere]">
-                          {p.name || p.full_name || `Passenger ${idx + 1}`}
+                          {p.name || p.full_name || t('passenger.passengerNum', { num: idx + 1 })}
                         </p>
                         <p className="text-slate-500 text-[10px] mt-0.5">
                           {genderLabel}{p.age ? `, ${p.age} yrs` : ""}
@@ -208,7 +210,7 @@ export default function TicketInvoice({ detailData, isWaitlist = false, location
 
                     {p.seat_number && (
                       <span className="text-xs font-bold text-slate-700 bg-slate-100 border border-slate-200 px-2.5 py-1 rounded-lg flex-shrink-0">
-                        Seat {p.seat_number}
+                        {t('passenger.seatNum', { num: p.seat_number })}
                       </span>
                     )}
                   </div>
@@ -221,10 +223,10 @@ export default function TicketInvoice({ detailData, isWaitlist = false, location
                         <span className="material-symbols-outlined text-xs text-emerald-600">
                           work
                         </span>
-                        <span>{freeBaggageKg} kg Checked | {freeHandbagKg} kg Handbag</span>
+                        <span>{t('invoice.freeBaggage', { checked: freeBaggageKg, handbag: freeHandbagKg })}</span>
                       </div>
                       <span className="text-[10px] font-bold text-emerald-800 bg-emerald-100/90 px-2 py-0.5 rounded-md border border-emerald-200/80">
-                        Included
+                        {t('baggage.included')}
                       </span>
                     </div>
 
@@ -235,7 +237,7 @@ export default function TicketInvoice({ detailData, isWaitlist = false, location
                           <span className="material-symbols-outlined text-xs text-indigo-600">
                             luggage
                           </span>
-                          <span>+{extraKg} kg Extra Luggage</span>
+                          <span>{t('baggage.extraLuggageRow', { kg: extraKg })}</span>
                         </div>
                         <div className="receipt-item-price">
                           {formatCurrency(extraCost)}
@@ -253,7 +255,7 @@ export default function TicketInvoice({ detailData, isWaitlist = false, location
                           <span>{compMealName}</span>
                         </div>
                         <span className="text-[10px] font-bold text-emerald-800 bg-emerald-100/90 px-2 py-0.5 rounded-md border border-emerald-200/80">
-                          Included
+                          {t('baggage.included')}
                         </span>
                       </div>
                     )}
@@ -264,7 +266,7 @@ export default function TicketInvoice({ detailData, isWaitlist = false, location
                         m.food_item_name ||
                         m.name ||
                         m.food_item?.name ||
-                        "Pre-ordered Item";
+                        t('invoice.preOrderedItem');
                       const qty = m.quantity || 1;
                       const itemPrice = Number(m.display_price || m.unit_price || m.price || 0);
                       const subtotal = itemPrice * qty;
@@ -293,7 +295,7 @@ export default function TicketInvoice({ detailData, isWaitlist = false, location
             })
           ) : (
             <div className="timeline-card p-3 text-xs font-medium text-slate-600">
-              {seatCount} Passenger(s)
+              {t('invoice.passengerCount', { count: seatCount })}
             </div>
           )}
         </div>
@@ -302,10 +304,10 @@ export default function TicketInvoice({ detailData, isWaitlist = false, location
       {/* Fare Summary Breakdown */}
       <div className="px-5 pb-5 space-y-3">
         <h4 className="text-xs font-bold text-slate-500 tracking-wider mb-6">
-          Payment Summary
+          {t('invoice.paymentSummary')}
         </h4>
         <div className="flex items-center justify-between text-xs text-slate-600 font-medium">
-          <span>Base Fare ({seatCount} seat{seatCount > 1 ? "s" : ""})</span>
+          <span>{seatCount > 1 ? t('invoice.baseFares', { count: seatCount }) : t('invoice.baseFare', { count: seatCount })}</span>
           <span className="font-bold text-slate-950">{formatCurrency(baseFareTotal)}</span>
         </div>
 
@@ -313,7 +315,7 @@ export default function TicketInvoice({ detailData, isWaitlist = false, location
           <div className="flex items-center justify-between text-xs text-blue-700 font-medium mt-2">
             <span className="flex items-center gap-1">
               <span className="material-symbols-outlined text-xs">airline_seat_recline_normal</span>
-              Seat Fare
+              {t('invoice.seatFare')}
             </span>
             <span className="font-bold text-blue-900">{formatCurrency(seatTotal)}</span>
           </div>
@@ -323,7 +325,7 @@ export default function TicketInvoice({ detailData, isWaitlist = false, location
           <div className="flex items-center justify-between text-xs text-amber-700 font-medium mt-2">
             <span className="flex items-center gap-1">
               <span className="material-symbols-outlined text-xs">restaurant</span>
-              In-Flight Meals
+              {t('invoice.inFlightMeals')}
             </span>
             <span className="font-bold text-amber-900">{formatCurrency(mealTotal)}</span>
           </div>
@@ -333,18 +335,18 @@ export default function TicketInvoice({ detailData, isWaitlist = false, location
           <div className="flex items-center justify-between text-xs text-indigo-700 font-medium mt-2">
             <span className="flex items-center gap-1">
               <span className="material-symbols-outlined text-xs">luggage</span>
-              Extra Luggage
+              {t('invoice.extraLuggage')}
             </span>
             <span className="font-bold text-indigo-900">{formatCurrency(extraBaggageTotal)}</span>
           </div>
         )}
 
         <div className="flex items-center justify-between text-xs text-slate-600 font-medium mt-2 pb-3">
-          <span>Taxes & Service Charges (12%)</span>
+          <span>{t('invoice.taxes')}</span>
           <span className="font-bold text-slate-950">{formatCurrency(taxesCalc)}</span>
         </div>
         <div className="flex items-center justify-between text-base font-extrabold text-slate-950 pt-3 border-t border-slate-200/80">
-          <span>Total Amount</span>
+          <span>{t('invoice.totalAmount')}</span>
           <span>{formatCurrency(grandTotal)}</span>
         </div>
       </div>

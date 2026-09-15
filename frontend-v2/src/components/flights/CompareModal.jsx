@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { fetchComparison, clearComparison } from "@/store/comparisonSlice";
 import { formatCurrency } from "@/utils/formatters";
 
@@ -33,6 +34,7 @@ const fmtDuration = (mins) => {
 };
 
 export default function CompareModal({ onClose }) {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { selectedIds, comparisonData, loading, error } = useSelector(

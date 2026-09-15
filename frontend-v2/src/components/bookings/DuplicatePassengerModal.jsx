@@ -1,15 +1,17 @@
+import { useTranslation } from "react-i18next";
 import ConfirmModal from "@/components/common/ConfirmModal";
 
 export default function DuplicatePassengerModal({ isOpen, onConfirm, onCancel }) {
+  const { t } = useTranslation();
   return (
     <ConfirmModal
       isOpen={isOpen}
       variant="warning"
       icon="warning"
-      title="Duplicate Passenger Details"
-      description="You have entered duplicate details for multiple passengers. Do you want to confirm?"
-      confirmText="Confirm"
-      cancelText="Go Back"
+      title={t('passenger.duplicateTitle')}
+      description={t('passenger.duplicateDesc')}
+      confirmText={t('passenger.confirm')}
+      cancelText={t('passenger.goBack')}
       onConfirm={onConfirm}
       onCancel={onCancel}
     />

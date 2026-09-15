@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 import { bookingAPI } from "@/services/booking-service/bookingService";
 import { waitlistAPI } from "@/services/waitlist-service/waitlistService";
 import TicketInvoice from "@/components/bookings/TicketInvoice";
 
 export default function BookingConfirmationPage() {
+  const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
@@ -64,7 +66,7 @@ export default function BookingConfirmationPage() {
     return (
       <div className="flex-1 min-h-screen bg-slate-50/60 pt-20 pb-16 px-4 max-w-3xl mx-auto w-full flex flex-col items-center justify-center">
         <div className="w-12 h-12 rounded-full border-4 border-slate-300 border-t-slate-900 animate-spin mb-4" />
-        <p className="text-sm font-semibold text-slate-600">Generating Ticket Invoice...</p>
+        <p className="text-sm font-semibold text-slate-600">{t('bookingConfirmation.generatingInvoice')}</p>
       </div>
     );
   }
@@ -103,7 +105,7 @@ export default function BookingConfirmationPage() {
 
       {/* Main Heading */}
       <h1 className="text-xl font-bold text-slate-950 text-center mb-6">
-        {isWaitlist ? "Waitlist Ticket" : "Booking Confirmed!"}
+        {isWaitlist ? t('bookingConfirmation.waitlistTicket') : t('bookingConfirmation.bookingConfirmed')}
       </h1>
 
       {/* Action Buttons Header Bar */}
@@ -113,14 +115,14 @@ export default function BookingConfirmationPage() {
           onClick={() => navigate("/my-bookings")}
           className="btn-primary text-slate-950 px-6 py-2 rounded-xl text-sm font-bold shadow-2xs cursor-pointer"
         >
-          View Bookings
+          {t('bookingConfirmation.viewBookings')}
         </button>
         <button
           type="button"
           onClick={() => navigate("/flights")}
           className="bg-slate-950 text-white font-semibold px-6 py-2 rounded-xl hover:bg-slate-800 transition-all cursor-pointer text-sm shadow-2xs active:scale-95"
         >
-          Back
+          {t('bookingConfirmation.back')}
         </button>
       </div>
 
@@ -133,10 +135,10 @@ export default function BookingConfirmationPage() {
             </div>
             <div>
               <h3 className="text-sm font-bold text-amber-400">
-                Multi-leg Connecting Journey
+                {t('bookingConfirmation.multiLegJourney')}
               </h3>
               <p className="text-xs text-slate-300">
-                Next Leg: <strong>{nextLeg.departure_airport} &rarr; {nextLeg.arrival_airport}</strong> ({nextLeg.flight_no || nextLeg.airline_name || "Connecting Leg"})
+                {t('bookingConfirmation.nextLeg', { route: `${nextLeg.departure_airport} → ${nextLeg.arrival_airport}`, leg: nextLeg.flight_no || nextLeg.airline_name || t('bookingConfirmation.connectingLeg') })}
               </p>
             </div>
           </div>
@@ -145,7 +147,7 @@ export default function BookingConfirmationPage() {
             onClick={handleContinueToNextLeg}
             className="btn-primary text-slate-950 px-5 py-2 rounded-xl text-xs font-bold shadow-xs shrink-0 whitespace-nowrap flex items-center gap-1.5 cursor-pointer"
           >
-            <span>Book Next Flight &rarr;</span>
+            <span>{t('bookingConfirmation.bookNextFlight')}</span>
           </button>
         </div>
       )}
@@ -157,7 +159,7 @@ export default function BookingConfirmationPage() {
           <span className="material-symbols-outlined text-base text-sky-700 select-none flex-shrink-0 mr-1">
             mark_email_read
           </span>
-          A detailed ticket invoice and confirmation receipt have been dispatched to <strong>{userEmail}</strong>.
+          {t('bookingConfirmation.emailSent', { email: userEmail })}
         </p>
       </div>
 

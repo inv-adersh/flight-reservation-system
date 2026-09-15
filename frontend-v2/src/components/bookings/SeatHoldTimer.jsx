@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export default function SeatHoldTimer({ expiresAt, onExpire }) {
+  const { t } = useTranslation();
   const [timeLeft, setTimeLeft] = useState(0);
 
   useEffect(() => {
@@ -47,9 +49,9 @@ export default function SeatHoldTimer({ expiresAt, onExpire }) {
           <span className="material-symbols-outlined text-lg sm:text-xl">timer</span>
         </div>
         <div>
-          <p className="text-xs sm:text-sm font-bold">Seats Temporarily Reserved</p>
+          <p className="text-xs sm:text-sm font-bold">{t('seatTimer.seatsReserved')}</p>
           <p className="text-[11px] sm:text-xs text-slate-500 font-medium">
-            Complete your booking before hold expires
+            {t('seatTimer.completeBooking')}
           </p>
         </div>
       </div>
