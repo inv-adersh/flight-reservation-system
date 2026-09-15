@@ -63,6 +63,7 @@ export default function FlightDetailPage() {
     };
   }, [id]);
 
+  // code to checkout  
   const handleProceedToCheckout = () => {
     if (!isAuthenticated) {
       toast.error("Please login to proceed with flight booking.");
