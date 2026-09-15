@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import PassengerReviewCard from "./PassengerReviewCard";
 
 export default function BookingReviewCard({
@@ -10,6 +11,8 @@ export default function BookingReviewCard({
   extraBaggagePricePerKg = 0,
   currency = "INR",
 }) {
+  const { t } = useTranslation();
+
   return (
     <div className="booking-container-card rounded-3xl p-6 space-y-5 animate-fade-in transition-all duration-300">
       {/* Header Banner */}
@@ -20,10 +23,10 @@ export default function BookingReviewCard({
           </div>
           <div>
             <h3 className="text-lg font-bold text-slate-950">
-              Passenger & Selection Summary
+              {t('passenger.passengerAndSummary')}
             </h3>
             <p className="text-[10px] text-slate-500 font-medium pt-0.5">
-              Review traveler details and selected items before final payment
+              {t('passenger.reviewBeforePayment')}
             </p>
           </div>
         </div>

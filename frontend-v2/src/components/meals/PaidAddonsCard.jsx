@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { formatCurrency as fmtCurr } from "@/utils/formatters";
 
 export default function PaidAddonsCard({
@@ -8,6 +9,7 @@ export default function PaidAddonsCard({
   selectedMealsMap = {},
   onAddonQtyChange,
 }) {
+  const { t } = useTranslation();
   if (!foodItems || foodItems.length === 0) return null;
 
   const formatCurrency = (amount, currencyCode) => fmtCurr(amount, currencyCode || targetCurrency);
@@ -22,10 +24,10 @@ export default function PaidAddonsCard({
           </div>
           <div>
             <h3 className="text-xl font-bold text-slate-950">
-              In-Flight Add-ons & Refreshments
+              {t('meals.inFlightAddons')}
             </h3>
             <p className="pt-1 text-[10px] text-slate-500 font-medium">
-              Pre-order delicious snacks, beverages, and extra treats for your journey
+              {t('meals.inFlightAddonsDesc')}
             </p>
           </div>
         </div>
@@ -34,17 +36,17 @@ export default function PaidAddonsCard({
       {/* Passenger Selection List */}
       <div className="space-y-5">
         {passengers.map((p, paxIdx) => {
-          const paxName = p.name?.trim() ? p.name.trim() : `Passenger ${paxIdx + 1}`;
+          const paxName = p.name?.trim() ? p.name.trim() : t('passenger.passengerNum', { num: paxIdx + 1 });
           const paxMealsList = selectedMealsMap[paxIdx] || [];
 
           const genderRaw = (p.gender || "").toUpperCase();
           const genderLabel =
             genderRaw === "F" || genderRaw === "FEMALE"
-              ? "Female"
+              ? t('passenger.female')
               : genderRaw === "M" || genderRaw === "MALE"
-                ? "Male"
+                ? t('passenger.male')
                 : genderRaw === "O" || genderRaw === "OTHER"
-                  ? "Other"
+                  ? t('passenger.other')
                   : null;
 
           const ageLabel = p.age ? `${p.age} yrs` : null;
@@ -66,7 +68,7 @@ export default function PaidAddonsCard({
                 </div>
 
                 <span className="text-xs font-medium text-slate-400 flex-shrink-0">
-                  Select Extra Add-ons
+                  {t('meals.selectExtraAddons')}
                 </span>
               </div>
 
@@ -114,10 +116,10 @@ export default function PaidAddonsCard({
                           {/* Diet Badges */}
                           <div className="flex flex-wrap items-center gap-1 mt-1">
                             <span className={item.is_veg ? "badge-veg" : "badge-non-veg"}>
-                              {item.is_veg ? "VEG" : "NON-VEG"}
+                              {item.is_veg ? t('meals.veg') : t('meals.nonVeg')}
                             </span>
-                            {item.is_halal && <span className="badge-halal">HALAL</span>}
-                            {item.is_vegan && <span className="badge-vegan">VEGAN</span>}
+                            {item.is_halal && <span className="badge-halal">{t('meals.halal')}</span>}
+                            {item.is_vegan && <span className="badge-vegan">{t('meals.vegan')}</span>}
                           </div>
                         </div>
                       </div>
@@ -157,7 +159,7 @@ export default function PaidAddonsCard({
                             className="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-all active:scale-95 cursor-pointer shadow-xs flex items-center gap-1"
                           >
                             <span className="material-symbols-outlined text-sm">add</span>
-                            Add
+                            {t('meals.add')}
                           </button>
                         )}
                       </div>

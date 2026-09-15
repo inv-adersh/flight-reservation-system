@@ -8,6 +8,7 @@ import CustomSelect from "@/components/ui/CustomSelect";
 import SingleDatePickerModal from "@/components/ui/SingleDatePickerModal";
 import ChangePasswordModal from "@/components/ui/ChangePasswordModal";
 import countriesData from "../../../resources/countries.json";
+import { useTranslation } from "react-i18next";
 
 const formatGender = (genderStr) => {
   if (!genderStr) return "Male";
@@ -41,6 +42,7 @@ const extractLocalPhone = (fullPhoneStr, countryName) => {
 };
 
 export default function UserProfilePage() {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const auth = useSelector((state) => state?.auth) || {};
   const { profile: reduxProfile, isInitializing } = auth;
@@ -143,14 +145,14 @@ export default function UserProfilePage() {
     const birthDate = new Date(dobString);
     const today = new Date();
     if (birthDate > today) {
-      return "Date of birth cannot be in the future.";
+      return t('userProfile.dobFutureError');
     }
     const age = calculateAge(dobString);
     if (age < 18) {
-      return "You must be at least 18 years old.";
+      return t('userProfile.dobAgeError');
     }
     if (age > 130) {
-      return "Please enter a valid date of birth.";
+      return t('userProfile.dobInvalidError');
     }
     return "";
   };
@@ -222,12 +224,12 @@ export default function UserProfilePage() {
       
       setLocalProfile(updated);
       dispatch(updateProfileSuccess(updated));
-      toast.success("Profile updated successfully!");
+      toast.success(t('userProfile.updateSuccess'));
       setDobError("");
       setIsEditing(false);
     } catch (err) {
       logError('UserProfilePage/handleSave', err);
-      handleApiError(err, { fallback: 'Failed to update profile. Please try again.' });
+      handleApiError(err, { fallback: t('userProfile.updateError') });
     } finally {
       setSaving(false);
     }
@@ -237,7 +239,7 @@ export default function UserProfilePage() {
     return (
       <div className="relative overflow-hidden min-h-[calc(100vh-3.5rem)] flex flex-col items-center justify-center px-4 py-12 mt-16 bg-slate-50/60">
         <div className="w-12 h-12 rounded-full border-4 border-slate-300 border-t-slate-900 animate-spin mb-4" />
-        <p className="text-sm font-semibold text-slate-600">Loading Profile Details...</p>
+        <p className="text-sm font-semibold text-slate-600">{t('userProfile.loading')}</p>
       </div>
     );
   }
@@ -252,7 +254,7 @@ export default function UserProfilePage() {
       <div className="absolute top-10 right-1/4 w-72 h-72 bg-blue-100/60 rounded-full blur-3xl pointer-events-none" />
 
       <h1 className="text-xl font-bold text-slate-950 w-full max-w-2xl mb-7 ml-5">
-        Profile
+        {t('userProfile.profileHeader')}
       </h1>
 
       {/* Container Card */}
@@ -267,7 +269,7 @@ export default function UserProfilePage() {
                 className="h-8 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs transition-all duration-200 cursor-pointer"
               >
                 <span className="material-symbols-outlined text-sm">key</span>
-                <span className="hidden sm:inline">{hasUsablePassword ? "Update Password" : "Set Password"}</span>
+                <span className="hidden sm:inline">{hasUsablePassword ? t('userProfile.updatePassword') : t('userProfile.setPassword')}</span>
               </button>
               <button
                 type="button"
@@ -275,7 +277,7 @@ export default function UserProfilePage() {
                 className="h-8 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs transition-all duration-200 cursor-pointer"
               >
                 <span className="material-symbols-outlined text-sm">edit</span>
-                <span>Edit</span>
+                <span>{t('userProfile.edit')}</span>
               </button>
             </>
           ) : (
@@ -286,7 +288,7 @@ export default function UserProfilePage() {
                 disabled={saving}
                 className="h-8 inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold text-xs transition-all duration-200 cursor-pointer"
               >
-                Cancel
+                {t('userProfile.cancel')}
               </button>
               <button
                 type="button"
@@ -294,7 +296,7 @@ export default function UserProfilePage() {
                 disabled={saving || !hasChanges}
                 className="h-8 inline-flex items-center gap-1.5 px-4 py-1.5 rounded-xl bg-[#ffd600] hover:bg-yellow-400 text-black font-bold text-xs transition-all duration-200 cursor-pointer shadow-sm disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#ffd600]"
               >
-                {saving ? "Saving..." : "Save"}
+                {saving ? t('userProfile.saving') : t('userProfile.save')}
               </button>
             </>
           )}
@@ -310,14 +312,14 @@ export default function UserProfilePage() {
             <h1 className="font-bold text-slate-800">
               {profile?.first_name || profile?.last_name
                 ? `${profile.first_name || ""} ${profile.last_name || ""}`.trim()
-                : profile?.username || "Passenger Profile"}
+                : profile?.username || t('userProfile.defaultName')}
             </h1>
             <p className="text-xs font-semibold text-slate-500">
               @{profile?.username || "-"}
             </p>
             <div className="pt-1 flex items-center justify-center sm:justify-start gap-1.5 text-xs font-medium text-slate-500">
               <span className="material-symbols-outlined text-sm text-slate-400">calendar_month</span>
-              <span>Joined {formatDate(profile?.created_at)}</span>
+              <span>{t('userProfile.joined', { date: formatDate(profile?.created_at) })}</span>
             </div>
           </div>
         </div>
@@ -325,14 +327,14 @@ export default function UserProfilePage() {
         {/* Personal Information Group */}
         <div>
           <h3 className="text-xs font-bold text-slate-400 tracking-wide mb-4 ml-1">
-            Personal Information
+            {t('userProfile.personalInfo')}
           </h3>
           <div className="space-y-4">
             {/* First Name & Last Name */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-semibold text-slate-600 mb-2 ml-2">
-                  First name
+                  {t('userProfile.firstName')}
                 </label>
                 <input
                   type="text"
@@ -347,7 +349,7 @@ export default function UserProfilePage() {
               </div>
               <div>
                 <label className="block text-xs font-semibold text-slate-600 mb-2 ml-2">
-                  Last name
+                  {t('userProfile.lastName')}
                 </label>
                 <input
                   type="text"
@@ -365,30 +367,30 @@ export default function UserProfilePage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-semibold text-slate-600 mb-2 ml-2">
-                  Gender
+                  {t('userProfile.gender')}
                 </label>
                 {isEditing ? (
                   <CustomSelect
                     value={formData.gender}
                     onChange={(val) => setFormData((prev) => ({ ...prev, gender: val }))}
                     options={[
-                      { label: "Male", value: "Male" },
-                      { label: "Female", value: "Female" },
-                      { label: "Other", value: "Other" },
+                      { label: t('userProfile.male'), value: "Male" },
+                      { label: t('userProfile.female'), value: "Female" },
+                      { label: t('userProfile.other'), value: "Other" },
                     ]}
                   />
                 ) : (
                   <input
                     type="text"
                     readOnly
-                    value={profile?.gender ? profile.gender.charAt(0).toUpperCase() + profile.gender.slice(1).toLowerCase() : "-"}
+                    value={profile?.gender ? t(`userProfile.${profile.gender.toLowerCase()}`) : "-"}
                     className="input-field cursor-default pointer-events-none font-semibold text-slate-800"
                   />
                 )}
               </div>
               <div>
                 <label className="block text-xs font-semibold text-slate-600 mb-2 ml-2">
-                  Date of Birth
+                  {t('userProfile.dob')}
                 </label>
                 {isEditing ? (
                   <div>
@@ -399,7 +401,7 @@ export default function UserProfilePage() {
                         }`}
                     >
                       <span className={formData.date_of_birth ? "text-slate-800 font-semibold text-sm" : "text-slate-400 text-sm"}>
-                        {formData.date_of_birth ? formatDate(formData.date_of_birth) : "Select DOB"}
+                        {formData.date_of_birth ? formatDate(formData.date_of_birth) : t('userProfile.selectDob')}
                       </span>
                       <span className="material-symbols-outlined text-sm text-slate-500">calendar_today</span>
                     </button>
@@ -425,12 +427,12 @@ export default function UserProfilePage() {
         {/* Address & Location Group */}
         <div className="pt-2">
           <h3 className="text-xs font-bold text-slate-400 tracking-wide mb-4 ml-1">
-            Address & Location
+            {t('userProfile.addressLocation')}
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
               <label className="block text-xs font-semibold text-slate-600 mb-2 ml-2">
-                City
+                {t('userProfile.city')}
               </label>
               <input
                 type="text"
@@ -443,7 +445,7 @@ export default function UserProfilePage() {
             </div>
             <div>
               <label className="block text-xs font-semibold text-slate-600 mb-2 ml-2">
-                State
+                {t('userProfile.state')}
               </label>
               <input
                 type="text"
@@ -456,14 +458,14 @@ export default function UserProfilePage() {
             </div>
             <div>
               <label className="block text-xs font-semibold text-slate-600 mb-2 ml-2">
-                Country
+                {t('userProfile.country')}
               </label>
               {isEditing ? (
                 <CustomSelect
                   value={formData.country}
                   onChange={handleCountryChange}
                   options={countryOptions}
-                  placeholder="Select Country"
+                  placeholder={t('userProfile.selectCountry')}
                 />
               ) : (
                 <input
@@ -480,12 +482,12 @@ export default function UserProfilePage() {
         {/* Contact Details Group */}
         <div className="pt-2">
           <h3 className="text-xs font-bold text-slate-400 tracking-wide mb-4 ml-1">
-            Contact Details
+            {t('userProfile.contactDetails')}
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-semibold text-slate-600 mb-2 ml-2">
-                Phone number
+                {t('userProfile.phoneNumber')}
               </label>
               <div className="flex gap-2">
                 <input
@@ -494,7 +496,7 @@ export default function UserProfilePage() {
                   tabIndex={-1}
                   value={getDialCode(isEditing ? formData.country : profile?.country)}
                   className={`input-field w-20 sm:w-16 text-center cursor-default bg-slate-100/90 font-bold text-slate-700 select-none flex-shrink-0 ${!isEditing ? "pointer-events-none" : ""}`}
-                  title="Country Code (Auto-filled from selected Country)"
+                  title={t('userProfile.countryCodeTooltip')}
                 />
                 <input
                   type="text"
@@ -507,7 +509,7 @@ export default function UserProfilePage() {
                       phone_number: e.target.value.replace(/[^0-9]/g, ""),
                     }))
                   }
-                  placeholder="Enter phone number"
+                  placeholder={t('userProfile.enterPhone')}
                   className={`input-field flex-1 font-semibold text-slate-800 ${!isEditing ? "cursor-default pointer-events-none" : "focus:border-slate-400"
                     }`}
                 />
@@ -515,7 +517,7 @@ export default function UserProfilePage() {
             </div>
             <div>
               <label className="block text-xs font-semibold text-slate-600 mb-2 ml-2">
-                Email address
+                {t('userProfile.email')}
               </label>
               <div className="relative flex items-center">
                 <input
@@ -526,7 +528,7 @@ export default function UserProfilePage() {
                   className="input-field font-semibold text-slate-800 pr-10 cursor-default pointer-events-none"
                 />
                 {profile?.email && (
-                  <span className="material-symbols-outlined text-base text-emerald-500 absolute right-3 pointer-events-none" title="Verified Email">
+                  <span className="material-symbols-outlined text-base text-emerald-500 absolute right-3 pointer-events-none" title={t('userProfile.verifiedEmail')}>
                     verified
                   </span>
                 )}

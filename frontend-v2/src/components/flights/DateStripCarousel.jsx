@@ -1,8 +1,11 @@
 import { useState, useEffect, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 import { flightsAPI } from "@/services/flight-service/flightService";
+import { useTranslation } from "react-i18next";
 
 export default function DateStripCarousel({ selectedDepDate, onSelectDate, filters }) {
+  const { i18n } = useTranslation();
+  const locale = i18n.language?.startsWith("ja") ? "ja-JP" : "en-US";
   const [searchParams, setSearchParams] = useSearchParams();
   const scrollRef = useRef(null);
   const selectedItemRef = useRef(null);
@@ -148,18 +151,18 @@ export default function DateStripCarousel({ selectedDepDate, onSelectDate, filte
       const day = String(d.getDate()).padStart(2, "0");
       const isoStr = `${year}-${month}-${day}`;
 
-      const weekday = d.toLocaleString("en-US", { weekday: "short" });
-      const monthShort = d.toLocaleString("en-US", { month: "short" });
+      const weekday = d.toLocaleString(locale, { weekday: "short" });
+      const monthShort = d.toLocaleString(locale, { month: "short" });
       const dayNum = d.getDate();
 
       list.push({
         isoStr,
-        dateStr: `${weekday}, ${dayNum} ${monthShort}`,
+        dateStr: locale === "ja-JP" ? `${monthShort}${dayNum}日(${weekday})` : `${weekday}, ${dayNum} ${monthShort}`,
         isToday: i === 0
       });
     }
     setDates(list);
-  }, [activeDate]);
+  }, [activeDate, locale]);
 
   // Compute reference price (selected date's price or average of available prices)
   const activeDatePriceRaw = priceMap[activeDate];

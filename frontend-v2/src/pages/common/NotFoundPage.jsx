@@ -1,6 +1,8 @@
 import { useLocation, useNavigate, Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 export default function NotFoundPage() {
+  const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
 

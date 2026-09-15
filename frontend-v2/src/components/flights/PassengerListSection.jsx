@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import CustomSelect from "@/components/ui/CustomSelect";
 
 export default function PassengerListSection({
@@ -7,6 +8,8 @@ export default function PassengerListSection({
   inputRefs,
   onBlurField,
 }) {
+  const { t } = useTranslation();
+
   const handleAddPassenger = () => {
     const updated = [
       ...passengers,
@@ -60,7 +63,7 @@ export default function PassengerListSection({
           <span className="material-symbols-outlined text-xl">people</span>
         </div>
         <h3 className="text-xl font-bold text-slate-950">
-          Add Passengers
+          {t('passenger.addPassengers')}
         </h3>
       </div>
 
@@ -77,14 +80,14 @@ export default function PassengerListSection({
             >
               <div className="flex items-center justify-between mb-5">
                 <span className="text-xs font-bold text-slate-700">
-                  Passenger {index + 1}
+                  {t('passenger.passengerNum', { num: index + 1 })}
                 </span>
                 {passengers.length > 1 && (
                   <button
                     type="button"
                     onClick={() => handleRemovePassenger(index)}
                     className="text-slate-400 hover:text-rose-500 transition-all duration-200 p-1 cursor-pointer"
-                    title="Remove passenger"
+                    title={t('passenger.removePassenger')}
                   >
                     <span className="material-symbols-outlined text-xs font-bold">
                       close
@@ -98,7 +101,7 @@ export default function PassengerListSection({
                 <div className="sm:col-span-2">
                   <div className="flex items-center justify-between mb-1.5">
                     <label className="text-[10px] font-bold text-slate-400 tracking-wider px-2">
-                      Full Name
+                      {t('passenger.fullName')}
                     </label>
                     <span className="text-[9px] font-medium text-slate-400">
                       {passenger.name.length}/150
@@ -130,7 +133,7 @@ export default function PassengerListSection({
                 {/* Age Field */}
                 <div>
                   <label className="text-[10px] font-bold text-slate-400 tracking-wider block mb-1.5 px-2">
-                    Age
+                    {t('passenger.age')}
                   </label>
                   <input
                     ref={(el) => {
@@ -158,13 +161,13 @@ export default function PassengerListSection({
                 {/* Gender Custom Dropdown Field */}
                 <div>
                   <label className="text-[10px] font-bold text-slate-400 tracking-wider block mb-1.5 px-2">
-                    Gender
+                    {t('passenger.gender')}
                   </label>
                   <CustomSelect
                     value={passenger.gender || "Male"}
                     onChange={(val) => handleGenderChange(index, val)}
-                    options={["Male", "Female", "Other"]}
-                    placeholder="Select Gender"
+                    options={[t('passenger.male'), t('passenger.female'), t('passenger.other')]}
+                    placeholder={t('passenger.selectGender')}
                     error={Boolean(pErrors.gender)}
                   />
                   {pErrors.gender && (
@@ -178,7 +181,7 @@ export default function PassengerListSection({
               {/* Phone Number (Optional) Field */}
               <div className="mt-3">
                 <label className="text-[10px] font-bold text-slate-400 tracking-wider block mb-1.5 px-2">
-                  Phone Number (Optional)
+                  {t('passenger.phoneOptional')}
                 </label>
                 <input
                   type="text"
@@ -200,7 +203,7 @@ export default function PassengerListSection({
           onClick={handleAddPassenger}
           className="text-sky-600 hover:text-sky-700 text-xs font-bold transition-all duration-200 cursor-pointer inline-flex items-center gap-1 hover:gap-1.5"
         >
-          <span>+ Add New Passenger</span>
+          <span>{t('passenger.addNewPassenger')}</span>
         </button>
       </div>
     </div>

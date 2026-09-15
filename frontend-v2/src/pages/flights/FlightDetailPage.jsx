@@ -8,6 +8,7 @@ import FareDetailsCard from "@/components/flights/FareDetailsCard";
 import FarePredictionBadge from "@/components/flights/FarePredictionBadge"; 
 import DynamicPriceBreakdownCard from "@/components/flights/DynamicPriceBreakdownCard";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 
 export default function FlightDetailPage() {
   const { id } = useParams();

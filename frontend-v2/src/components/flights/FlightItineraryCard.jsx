@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { getAirportInfo } from "@/utils/airportHelpers";
 import BaggageAndMealsInfoCards from "@/components/flights/BaggageAndMealsInfoCards";
 
@@ -9,6 +10,7 @@ export default function FlightItineraryCard({
   overrideCheckedBaggage,
   overrideHandbag,
 }) {
+  const { t } = useTranslation();
   if (!flight) return null;
 
   const {

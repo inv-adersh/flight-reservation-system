@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 import { toast } from "react-hot-toast";
 import { handleApiError, logError } from "@/utils/errorUtils";
 import { bookingAPI } from "@/services/booking-service/bookingService";
@@ -10,6 +11,7 @@ import { formatCurrency as fmtCurr } from "@/utils/formatters";
 import { fetchNotifications } from "../../store/notificationsSlice";
 
 export default function TicketCancellationPage() {
+  const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
@@ -83,11 +85,11 @@ export default function TicketCancellationPage() {
       if (isWaitlist) {
         const res = await waitlistAPI.cancel(id);
         //console.log(res);
-        toast.success("Waitlist entry cancelled successfully.");
+        toast.success(t('ticketCancellation.waitlistSuccess'));
       } else {
         const res = await bookingAPI.cancel(id);
         dispatch(fetchNotifications());
-        toast.success(res?.detail || "Booking cancelled successfully.");
+        toast.success(res?.detail || t('ticketCancellation.bookingSuccess'));
 
       }
       navigate("/my-bookings", { state: { showPastBookings: true } });
@@ -104,7 +106,7 @@ export default function TicketCancellationPage() {
     return (
       <div className="flex-1 min-h-screen bg-slate-50/60 pt-20 pb-16 px-4 max-w-3xl mx-auto w-full flex flex-col items-center justify-center">
         <div className="w-12 h-12 rounded-full border-4 border-slate-300 border-t-slate-900 animate-spin mb-4" />
-        <p className="text-sm font-semibold text-slate-600">Loading Cancellation Details...</p>
+        <p className="text-sm font-semibold text-slate-600">{t('ticketCancellation.loading')}</p>
       </div>
     );
   }
@@ -127,10 +129,10 @@ export default function TicketCancellationPage() {
 
       <div className="pb-8 ml-5 w-full">
         <h2 className="text-xl font-bold text-slate-950">
-          Cancel Ticket - {`#${shortId}`}
+          {t('ticketCancellation.cancelTicketTitle', { id: shortId })}
         </h2>
         <p className="text-xs font-bold text-slate-500 mt-1.5 tracking-wide">
-          {seatCount} Passenger{seatCount > 1 ? "s" : ""}
+          {seatCount === 1 ? t('ticketCancellation.passengerCount_one', { count: seatCount }) : t('ticketCancellation.passengerCount_other', { count: seatCount })}
         </p>
       </div>
 
@@ -144,24 +146,24 @@ export default function TicketCancellationPage() {
       {/* Refund Breakdown */}
       <div className="pb-5 w-full">
         <h4 className="text-xs ml-3 font-bold text-slate-500 tracking-wider mb-6">
-          Refund Summary & Policy
+          {t('ticketCancellation.refundSummary')}
         </h4>
 
         <div className="space-y-3 mx-3">
           <div className="flex items-center justify-between text-xs text-slate-600 font-medium">
-            <span>Original Amount Paid</span>
+            <span>{t('ticketCancellation.originalAmount')}</span>
             <span className="font-bold text-slate-950">{formatCurrency(grandTotal)}</span>
           </div>
 
           <div className="flex items-center justify-between text-xs text-rose-600 font-medium">
-            <span>Cancellation Processing Fee</span>
+            <span>{t('ticketCancellation.processingFee')}</span>
             <span className="font-bold">
-              {cancellationFee === 0 ? "0 (Free)" : `- ${formatCurrency(cancellationFee)}`}
+              {cancellationFee === 0 ? t('ticketCancellation.free') : `- ${formatCurrency(cancellationFee)}`}
             </span>
           </div>
 
           <div className="flex items-center justify-between text-lg font-bold text-slate-950 pt-3 border-t border-slate-200/80">
-            <span>Refund Amount</span>
+            <span>{t('ticketCancellation.refundAmount')}</span>
             <span>{formatCurrency(estimatedRefund)}</span>
           </div>
         </div>
@@ -172,8 +174,8 @@ export default function TicketCancellationPage() {
           </span>
           <p className="text-[11px] leading-relaxed">
             {isWaitlist
-              ? "Waitlist cancellations incur zero cancellation fees. Refund will be credited instantly."
-              : "Cancellation fees are calculated according to the airline's fare rules. Refunds are processed to your original payment method."}
+              ? t('ticketCancellation.waitlistInfo')
+              : t('ticketCancellation.bookingInfo')}
           </p>
         </div>
       </div>
@@ -186,7 +188,7 @@ export default function TicketCancellationPage() {
           className="btn-danger text-xs px-4 py-2.5 rounded-2xl flex items-center gap-2 animate-fade-in"
         >
           <span className="material-symbols-outlined text-base">cancel</span>
-          Confirm Cancellation
+          {t('ticketCancellation.confirmCancellation')}
         </button>
       </div>
 
@@ -200,15 +202,15 @@ export default function TicketCancellationPage() {
 
             <div className="space-y-2">
               <h3 className="text-base font-bold text-slate-950 animate-fade-in">
-                Confirm Ticket Cancellation?
+                {t('ticketCancellation.confirmTitle')}
               </h3>
               <p className="text-xs font-medium text-slate-600 leading-relaxed">
-                Are you sure you want to cancel Ticket <strong>#{shortId}</strong>? This action cannot be undone and your seats will be released.
+                <span dangerouslySetInnerHTML={{ __html: t('ticketCancellation.confirmMsg', { id: `<strong>#${shortId}</strong>` }) }} />
               </p>
             </div>
 
             <div className="p-3 bg-slate-50 rounded-2xl border border-slate-200/80 flex items-center justify-between text-xs font-bold text-slate-900">
-              <span>Net Refund:</span>
+              <span>{t('ticketCancellation.netRefund')}</span>
               <span className="text-emerald-600">{formatCurrency(estimatedRefund)}</span>
             </div>
 
@@ -219,7 +221,7 @@ export default function TicketCancellationPage() {
                 onClick={() => setShowConfirmModal(false)}
                 className="btn-secondary flex-1 text-xs py-2.5 rounded-xl"
               >
-                No, Keep Ticket
+                {t('ticketCancellation.keepTicket')}
               </button>
 
               <button
@@ -231,10 +233,10 @@ export default function TicketCancellationPage() {
                 {isSubmitting ? (
                   <>
                     <div className="w-4 h-4 rounded-full border-2 border-white border-t-transparent animate-spin" />
-                    Cancelling...
+                    {t('ticketCancellation.cancelling')}
                   </>
                 ) : (
-                  "Yes, Cancel Ticket"
+                  t('ticketCancellation.yesCancel')
                 )}
               </button>
             </div>

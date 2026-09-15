@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 
 export default function ComplimentaryMealCard({
   passengers = [],
@@ -10,6 +11,8 @@ export default function ComplimentaryMealCard({
   onMealSelect,
   onPreferenceChange,
 }) {
+  const { t } = useTranslation();
+
   return (
     <div className="booking-container-card rounded-3xl p-6 space-y-6 animate-fade-in">
       {/* Header Banner */}
@@ -20,10 +23,10 @@ export default function ComplimentaryMealCard({
           </div>
           <div>
             <h3 className="text-xl font-bold text-slate-950">
-              Complimentary In-Flight Meal
+              {t('meals.complimentaryMeal')}
             </h3>
             <p className="pt-1 text-[10px] text-slate-500 font-medium">
-              Included with your ticket fare at no additional charge
+              {t('meals.complimentaryMealDesc')}
             </p>
           </div>
         </div>
@@ -32,18 +35,18 @@ export default function ComplimentaryMealCard({
       {/* Passengers Selection List */}
       <div className="space-y-5">
         {passengers.map((p, idx) => {
-          const paxName = p.name?.trim() ? p.name.trim() : `Passenger ${idx + 1}`;
+          const paxName = p.name?.trim() ? p.name.trim() : t('passenger.passengerNum', { num: idx + 1 });
           const paxPaidMeals = selectedMealsMap[idx] || [];
           const currentPref = preferencesMap[idx] || "VEG";
 
           const genderRaw = (p.gender || "").toUpperCase();
           const genderLabel =
             genderRaw === "F" || genderRaw === "FEMALE"
-              ? "Female"
+              ? t('passenger.female')
               : genderRaw === "M" || genderRaw === "MALE"
-                ? "Male"
+                ? t('passenger.male')
                 : genderRaw === "O" || genderRaw === "OTHER"
-                  ? "Other"
+                  ? t('passenger.other')
                   : null;
 
           const ageLabel = p.age ? `${p.age} yrs` : null;
@@ -65,7 +68,7 @@ export default function ComplimentaryMealCard({
                 </div>
 
                 <span className="text-xs font-medium text-slate-400 flex-shrink-0">
-                  Select Meal Choice
+                  {t('meals.selectMealChoice')}
                 </span>
               </div>
 
@@ -118,14 +121,14 @@ export default function ComplimentaryMealCard({
                         {/* Meal Tags */}
                         <div className="flex items-center gap-1.5 mt-2">
                           <span className={meal.is_veg ? "badge-veg" : "badge-non-veg"}>
-                            {meal.is_veg ? "VEG" : "NON-VEG"}
+                            {meal.is_veg ? t('meals.veg') : t('meals.nonVeg')}
                           </span>
-                          {meal.is_halal && <span className="badge-halal">HALAL</span>}
-                          {meal.is_vegan && <span className="badge-vegan">VEGAN</span>}
+                          {meal.is_halal && <span className="badge-halal">{t('meals.halal')}</span>}
+                          {meal.is_vegan && <span className="badge-vegan">{t('meals.vegan')}</span>}
                         </div>
 
                         <span className="text-xs font-bold text-slate-900 block mt-2">
-                          Included (Free)
+                          {t('meals.includedFree')}
                         </span>
                       </div>
                     </button>
@@ -158,9 +161,9 @@ export default function ComplimentaryMealCard({
                   </div>
 
                   <div>
-                    <span className="text-xs font-bold block">No Meal / Skip</span>
+                    <span className="text-xs font-bold block">{t('meals.noMealSkip')}</span>
                     <span className="text-[10px] text-slate-500 font-medium block mt-0.5">
-                      Opt out of in-flight meal service
+                      {t('meals.noMealSkipDesc')}
                     </span>
                   </div>
                 </button>

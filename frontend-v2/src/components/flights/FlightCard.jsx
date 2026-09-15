@@ -2,12 +2,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { addToComparison, removeFromComparison } from "@/store/comparisonSlice";
 import FlightBaggageMealIndicators from "./FlightBaggageMealIndicators";
 import { formatCurrency as fmtCurr } from "@/utils/formatters";
+import { useTranslation } from "react-i18next";
 
 
 export default function FlightCard({ flight, selectedCabinClass = "Economy", onViewDetails, optimizationBadges = [], isHighlighted = false, compareMode = false }) {
   const dispatch = useDispatch();
   const selectedIds = useSelector((state) => state.comparison.selectedIds);
   const isSelectedForCompare = selectedIds.includes(flight?.id);
+  const { t } = useTranslation();
 
   if (!flight) return null;
 
@@ -129,7 +131,7 @@ export default function FlightCard({ flight, selectedCabinClass = "Economy", onV
               </span>
             )}
             {!isDelayed && isWaitlisted && (
-              <span className="text-[10px] font-bold text-amber-800 bg-amber-200/80 px-2 py-0.5 rounded-full">Waitlist</span>
+              <span className="text-[10px] font-bold text-amber-800 bg-amber-200/80 px-2 py-0.5 rounded-full">{t('flightCard.waitlist')}</span>
             )}
           </div>
           <div className="flex items-center gap-2">
@@ -223,7 +225,7 @@ export default function FlightCard({ flight, selectedCabinClass = "Economy", onV
           </span>
           {booking_cutoff_passed ? (
             <span className="text-xs font-semibold text-rose-600 border border-rose-200 bg-rose-50 px-3 py-1 rounded-lg">
-              Booking Closed
+              {t('flightCard.bookingClosed')}
             </span>
           ) : (
             <button
@@ -231,7 +233,7 @@ export default function FlightCard({ flight, selectedCabinClass = "Economy", onV
               onClick={() => onViewDetails && onViewDetails(flight)}
               className="px-4 py-1.5 text-xs rounded-xl font-bold transition-all cursor-pointer btn-primary mt-0.5 shadow-sm"
             >
-              View Details
+              {t('flightCard.viewDetails')}
             </button>
           )}
 
@@ -255,7 +257,7 @@ export default function FlightCard({ flight, selectedCabinClass = "Economy", onV
                     : "bg-white text-slate-700 border-slate-300 hover:border-slate-900 hover:bg-slate-50"
                 }`}
             >
-              {isSelectedForCompare ? "✓ Added" : "+ Compare"}
+              {isSelectedForCompare ? t('flightCard.added') : t('flightCard.compare')}
             </button>
           )}
         </div>
@@ -367,13 +369,13 @@ export default function FlightCard({ flight, selectedCabinClass = "Economy", onV
         {/* Bottom Bar: Price & CTA */}
         <div className="flex items-center justify-between pt-2 border-t border-slate-100">
           <div>
-            <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block select-none">Total Fare</span>
+            <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block select-none">{t('flightCard.totalFare')}</span>
             <span className="text-xl font-extrabold text-slate-950">{formatCurrency(Math.round(displayPrice))}</span>
           </div>
 
           {booking_cutoff_passed ? (
             <span className="text-xs font-semibold text-rose-600 border border-rose-200 bg-rose-50 px-3 py-1 rounded-lg">
-              Booking Closed
+              {t('flightCard.bookingClosed')}
             </span>
           ) : (
             <button
@@ -381,7 +383,7 @@ export default function FlightCard({ flight, selectedCabinClass = "Economy", onV
               onClick={() => onViewDetails && onViewDetails(flight)}
               className="px-4 py-1.5 text-xs rounded-xl font-bold transition-all cursor-pointer btn-primary shadow-sm"
             >
-              View Details
+              {t('flightCard.viewDetails')}
             </button>
           )}
         </div>
@@ -406,7 +408,7 @@ export default function FlightCard({ flight, selectedCabinClass = "Economy", onV
                   : "bg-white text-slate-700 border-slate-300 hover:border-slate-900 hover:bg-slate-50"
               }`}
           >
-            {isSelectedForCompare ? "✓ Added to Compare" : "+ Compare"}
+            {isSelectedForCompare ? t('flightCard.addedToCompare') : t('flightCard.compare')}
           </button>
         )}
 

@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { fetchComparison, clearComparison } from "@/store/comparisonSlice";
 import { formatCurrency } from "@/utils/formatters";
 
@@ -33,6 +34,7 @@ const fmtDuration = (mins) => {
 };
 
 export default function CompareModal({ onClose }) {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { selectedIds, comparisonData, loading, error } = useSelector(
@@ -56,23 +58,23 @@ export default function CompareModal({ onClose }) {
   };
 
   const rows = [
-    { label: "Airline", icon: "airlines" },
-    { label: "Departure", icon: "flight_takeoff" },
-    { label: "Arrival", icon: "flight_land" },
-    { label: "Travel Time", icon: "schedule" },
-    { label: "Stops", icon: "trip_origin" },
-    { label: "Price Prediction", icon: "monitoring" },
-    { label: "Economy Price", icon: "sell" },
-    { label: "Business Price", icon: "workspace_premium" },
-    { label: "First Price", icon: "star" },
-    { label: "Economy Seats", icon: "event_seat" },
-    { label: "Business Seats", icon: "event_seat" },
-    { label: "First Seats", icon: "event_seat" },
-    { label: "Refund Type", icon: "policy" },
-    { label: "Meal Included", icon: "restaurant" },
+    { key: "airline",         label: t('flightCompare.airline'),         icon: "airlines" },
+    { key: "departure",       label: t('flightCompare.departure'),       icon: "flight_takeoff" },
+    { key: "arrival",         label: t('flightCompare.arrival'),         icon: "flight_land" },
+    { key: "travelTime",      label: t('flightCompare.travelTime'),      icon: "schedule" },
+    { key: "stops",           label: t('flightCompare.stops'),           icon: "trip_origin" },
+    { key: "pricePrediction", label: t('flightCompare.pricePrediction'), icon: "monitoring" },
+    { key: "economyPrice",    label: t('flightCompare.economyPrice'),    icon: "sell" },
+    { key: "businessPrice",   label: t('flightCompare.businessPrice'),   icon: "workspace_premium" },
+    { key: "firstPrice",      label: t('flightCompare.firstPrice'),      icon: "star" },
+    { key: "economySeats",    label: t('flightCompare.economySeats'),    icon: "event_seat" },
+    { key: "businessSeats",   label: t('flightCompare.businessSeats'),   icon: "event_seat" },
+    { key: "firstSeats",      label: t('flightCompare.firstSeats'),      icon: "event_seat" },
+    { key: "refundType",      label: t('flightCompare.refundType'),      icon: "policy" },
+    { key: "mealIncluded",    label: t('flightCompare.mealIncluded'),    icon: "restaurant" },
   ];
 
-  const getCellValue = (flight, rowLabel) => {
+  const getCellValue = (flight, rowKey) => {
     const economyFare = flight.fares?.find(f => f.cabin_class === "ECONOMY");
     const businessFare = flight.fares?.find(f => f.cabin_class === "BUSINESS");
     const firstFare = flight.fares?.find(f => f.cabin_class === "FIRST");
@@ -80,8 +82,8 @@ export default function CompareModal({ onClose }) {
     const businessSeats = flight.seat_availability?.BUSINESS;
     const firstSeats = flight.seat_availability?.FIRST;
 
-    switch (rowLabel) {
-      case "Airline":
+    switch (rowKey) {
+      case "airline":
         return (
           <div className="flex flex-col items-center gap-1">
             {getLogoUrl(flight.airline_logo) ? (
@@ -96,29 +98,31 @@ export default function CompareModal({ onClose }) {
             <span className="text-[10px] text-slate-400">{flight.airline_code}</span>
           </div>
         );
-      case "Departure":
+      case "departure":
         return (
           <div className="flex flex-col items-center">
             <span className="text-sm sm:text-xl font-bold text-slate-900">{fmtTime(flight.departure_time)}</span>
             <span className="text-[9px] sm:text-[10px] text-slate-500">{fmtDate(flight.departure_time)}</span>
           </div>
         );
-      case "Arrival":
+      case "arrival":
         return (
           <div className="flex flex-col items-center">
             <span className="text-sm sm:text-xl font-bold text-slate-900">{fmtTime(flight.arrival_time)}</span>
             <span className="text-[9px] sm:text-[10px] text-slate-500">{fmtDate(flight.arrival_time)}</span>
           </div>
         );
-      case "Travel Time":
+      case "travelTime":
         return <span className="text-xs sm:text-sm font-bold text-slate-800">{fmtDuration(flight.travel_time_minutes)}</span>;
-      case "Stops":
+      case "stops":
         return (
           <span className={`text-xs sm:text-sm font-bold ${flight.number_of_stops === 0 ? "text-green-600" : "text-amber-600"}`}>
-            {flight.number_of_stops === 0 ? "Non-stop" : `${flight.number_of_stops} Stop${flight.number_of_stops > 1 ? "s" : ""}`}
+            {flight.number_of_stops === 0
+              ? t('flightCompare.nonStop')
+              : `${flight.number_of_stops} ${flight.number_of_stops > 1 ? t('flightCompare.stopsPlural') : t('flightCompare.stop')}`}
           </span>
         );
-      case "Price Prediction": {
+      case "pricePrediction": {
         const direction = flight.fare_prediction_direction;
         const confidence = flight.fare_prediction_confidence;
         
@@ -130,61 +134,61 @@ export default function CompareModal({ onClose }) {
           return (
             <div className="flex flex-col items-center">
               <span className="text-[9px] sm:text-[10px] font-bold text-rose-700 bg-rose-100 px-1.5 sm:px-2 py-0.5 rounded-full flex items-center gap-0.5 sm:gap-1 shadow-sm border border-rose-200">
-                <span className="material-symbols-outlined text-[10px] sm:text-[12px]">trending_up</span> Increase
+                <span className="material-symbols-outlined text-[10px] sm:text-[12px]">trending_up</span> {t('flightCompare.increase')}
               </span>
-              <span className="text-[8px] sm:text-[9px] font-semibold text-slate-500 mt-0.5 sm:mt-1">{confidence}% confidence</span>
+              <span className="text-[8px] sm:text-[9px] font-semibold text-slate-500 mt-0.5 sm:mt-1">{t('flightCompare.confidence', { value: confidence })}</span>
             </div>
           );
         } else if (direction === "DECREASE") {
           return (
             <div className="flex flex-col items-center">
               <span className="text-[9px] sm:text-[10px] font-bold text-emerald-700 bg-emerald-100 px-1.5 sm:px-2 py-0.5 rounded-full flex items-center gap-0.5 sm:gap-1 shadow-sm border border-emerald-200">
-                <span className="material-symbols-outlined text-[10px] sm:text-[12px]">trending_down</span> Drop
+                <span className="material-symbols-outlined text-[10px] sm:text-[12px]">trending_down</span> {t('flightCompare.drop')}
               </span>
-              <span className="text-[8px] sm:text-[9px] font-semibold text-slate-500 mt-0.5 sm:mt-1">{confidence}% confidence</span>
+              <span className="text-[8px] sm:text-[9px] font-semibold text-slate-500 mt-0.5 sm:mt-1">{t('flightCompare.confidence', { value: confidence })}</span>
             </div>
           );
         } else {
            return (
             <div className="flex flex-col items-center">
               <span className="text-[9px] sm:text-[10px] font-bold text-slate-700 bg-slate-100 px-1.5 sm:px-2 py-0.5 rounded-full flex items-center gap-0.5 sm:gap-1 shadow-sm border border-yellow-100">
-                <span className="material-symbols-outlined text-[10px] sm:text-[12px]">trending_flat</span> Stable
+                <span className="material-symbols-outlined text-[10px] sm:text-[12px]">trending_flat</span> {t('flightCompare.stable')}
               </span>
-              <span className="text-[8px] sm:text-[9px] font-semibold text-slate-500 mt-0.5 sm:mt-1">{confidence}% confidence</span>
+              <span className="text-[8px] sm:text-[9px] font-semibold text-slate-500 mt-0.5 sm:mt-1">{t('flightCompare.confidence', { value: confidence })}</span>
             </div>
           );
         }
       }
-      case "Economy Price":
+      case "economyPrice":
         return economyFare
           ? <span className="text-xs sm:text-base font-extrabold text-slate-900">{formatCurrency(Math.round(economyFare.price), economyFare.currency)}</span>
           : <span className="text-xs text-slate-400">N/A</span>;
-      case "Business Price":
+      case "businessPrice":
         return businessFare
           ? <span className="text-xs sm:text-base font-extrabold text-slate-900">{formatCurrency(Math.round(businessFare.price), businessFare.currency)}</span>
           : <span className="text-xs text-slate-400">N/A</span>;
-      case "First Price":
+      case "firstPrice":
         return firstFare
           ? <span className="text-xs sm:text-base font-extrabold text-slate-900">{formatCurrency(Math.round(firstFare.price), firstFare.currency)}</span>
           : <span className="text-xs text-slate-400">N/A</span>;
-      case "Economy Seats":
+      case "economySeats":
         return economySeats
           ? <span className={`text-xs sm:text-sm font-bold ${economySeats.available > 10 ? "text-green-600" : "text-amber-600"}`}>{economySeats.available} / {economySeats.total}</span>
           : <span className="text-xs text-slate-400">N/A</span>;
-      case "Business Seats":
+      case "businessSeats":
         return businessSeats
           ? <span className={`text-xs sm:text-sm font-bold ${businessSeats.available > 5 ? "text-green-600" : "text-amber-600"}`}>{businessSeats.available} / {businessSeats.total}</span>
           : <span className="text-xs text-slate-400">N/A</span>;
-      case "First Seats":
+      case "firstSeats":
         return firstSeats
           ? <span className={`text-xs sm:text-sm font-bold ${firstSeats.available > 2 ? "text-green-600" : "text-amber-600"}`}>{firstSeats.available} / {firstSeats.total}</span>
           : <span className="text-xs text-slate-400">N/A</span>;
-      case "Refund Type":
+      case "refundType":
         return <span className="text-[11px] sm:text-xs font-semibold text-slate-600 capitalize">{economyFare?.refund_type?.replace("_", " ") || "-"}</span>;
-      case "Meal Included":
+      case "mealIncluded":
         return economyFare?.meal_included
-          ? <span className="text-green-600 font-bold text-xs sm:text-sm">✓ Yes</span>
-          : <span className="text-slate-400 text-xs sm:text-sm">✗ No</span>;
+          ? <span className="text-green-600 font-bold text-xs sm:text-sm">{t('flightCompare.yes')}</span>
+          : <span className="text-slate-400 text-xs sm:text-sm">{t('flightCompare.no')}</span>;
       default:
         return "-";
     }
@@ -209,9 +213,9 @@ export default function CompareModal({ onClose }) {
     }).flight_instance_id;
   })();
 
-  const isBest = (flight, rowLabel) => {
-    if (rowLabel === "Travel Time") return flight.flight_instance_id === bestTravelTimeId;
-    if (rowLabel === "Economy Price") return flight.flight_instance_id === bestPriceId;
+  const isBest = (flight, rowKey) => {
+    if (rowKey === "travelTime") return flight.flight_instance_id === bestTravelTimeId;
+    if (rowKey === "economyPrice") return flight.flight_instance_id === bestPriceId;
     return false;
   };
 
@@ -230,10 +234,10 @@ export default function CompareModal({ onClose }) {
         <div className="flex items-center justify-between px-4 py-3 sm:px-7 sm:py-5 border-b border-yellow-100 shrink-0">
           <div>
             <h2 className="text-base sm:text-xl font-extrabold text-slate-900">
-              Flight Comparison
+              {t('flightCompare.title')}
             </h2>
             <p className="text-[10px] sm:text-xs font-medium text-slate-600 mt-0.5">
-              Comparing {comparisonData.length || selectedIds.length} flights side by side
+              {t('flightCompare.comparing', { count: comparisonData.length || selectedIds.length })}
             </p>
           </div>
           <div className="flex items-center gap-2 sm:gap-3">
@@ -242,7 +246,7 @@ export default function CompareModal({ onClose }) {
               onClick={() => { dispatch(clearComparison()); handleClose(); }}
               className="text-[10px] sm:text-xs font-bold text-slate-600 hover:text-slate-900 transition-colors cursor-pointer px-2.5 py-1.5 sm:px-4 sm:py-2 rounded-lg sm:rounded-xl border border-yellow-200 hover:border-yellow-300 hover:bg-yellow-100/50 bg-white/50"
             >
-              Clear All
+              {t('flightCompare.clearAll')}
             </button>
             <button
               type="button"
@@ -261,7 +265,7 @@ export default function CompareModal({ onClose }) {
           {loading && (
             <div className="flex flex-col items-center justify-center py-16 sm:py-24 gap-3 sm:gap-4">
               <div className="animate-spin rounded-full h-8 w-8 sm:h-10 sm:w-10 border-t-2 border-b-2 border-yellow-900" />
-              <p className="text-slate-500 text-xs sm:text-sm font-semibold">Fetching comparison data...</p>
+              <p className="text-slate-500 text-xs sm:text-sm font-semibold">{t('flightCompare.fetching')}</p>
             </div>
           )}
 
@@ -278,7 +282,7 @@ export default function CompareModal({ onClose }) {
               <thead className="sticky top-0 z-20 bg-white shadow-sm">
                 <tr className="border-b-2 border-yellow-100">
                   <th className="w-28 min-w-[105px] sm:w-44 p-2.5 sm:p-5 text-left text-[10px] sm:text-[11px] font-extrabold text-slate-500 uppercase tracking-wider bg-slate-100 sticky left-0 z-30 border-r border-yellow-100">
-                    Feature
+                    {t('flightCompare.featureHeader')}
                   </th>
                   {comparisonData.map((flight) => (
                     <th key={flight.flight_instance_id} className="p-2.5 sm:p-5 text-center border-l border-yellow-100 bg-white shadow-[0_4px_20px_-10px_rgba(0,0,0,0.05)]">
@@ -311,8 +315,8 @@ export default function CompareModal({ onClose }) {
                         <span className="text-[11px] sm:text-xs font-bold text-slate-700 whitespace-nowrap">{row.label}</span>
                       </div>
                     </td>
-                    {comparisonData.map((flight) => {
-                      const best = isBest(flight, row.label);
+                     {comparisonData.map((flight) => {
+                      const best = isBest(flight, row.key);
                       return (
                         <td
                           key={flight.flight_instance_id}
@@ -321,7 +325,7 @@ export default function CompareModal({ onClose }) {
                           }`}
                         >
 
-                          {getCellValue(flight, row.label)}
+                          {getCellValue(flight, row.key)}
                         </td>
                       );
                     })}
@@ -338,7 +342,7 @@ export default function CompareModal({ onClose }) {
                         onClick={() => { dispatch(clearComparison()); handleClose(); navigate(`/flights/${flight.flight_instance_id}`); }}
                         className="w-[100px] sm:w-[160px] py-1.5 sm:py-3 rounded-lg sm:rounded-xl text-[11px] sm:text-sm font-bold btn-primary shadow-sm hover:shadow-md transition-all"
                       >
-                        Book Now
+                        {t('flightCompare.bookNow')}
                       </button>
                     </td>
                   ))}

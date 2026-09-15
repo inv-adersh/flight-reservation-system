@@ -1,11 +1,13 @@
 
+import { useTranslation } from "react-i18next";
 import { formatCurrency as fmtCurr } from "@/utils/formatters";
 
 export default function CabinClassSelector({ flight, selectedCabin, onSelectCabin }) {
+  const { t } = useTranslation();
   const allCabins = [
-    { key: "ECONOMY", label: "Economy", icon: "chair" },
-    { key: "BUSINESS", label: "Business", icon: "airline_seat_recline_extra" },
-    { key: "FIRST", label: "First Class", icon: "workspace_premium" }
+    { key: "ECONOMY", label: t('cabinSelector.economy'), icon: "chair" },
+    { key: "BUSINESS", label: t('cabinSelector.business'), icon: "airline_seat_recline_extra" },
+    { key: "FIRST", label: t('cabinSelector.firstClass'), icon: "workspace_premium" }
   ];
 
   // Only show cabins that actually exist for this flight
@@ -18,7 +20,7 @@ export default function CabinClassSelector({ flight, selectedCabin, onSelectCabi
   return (
     <div className="booking-container-card space-y-3 animate-fade-in">
       <h3 className="text-xl font-bold text-slate-950 mb-2">
-        Select Cabin Class
+        {t('cabinSelector.selectCabinClass')}
       </h3>
       <div className={`grid gap-3 ${gridColsClass}`}>
         {availableCabins.map((cabin) => {
@@ -67,7 +69,7 @@ export default function CabinClassSelector({ flight, selectedCabin, onSelectCabi
                     : "text-amber-500 font-bold"
                 }`}
               >
-                {isAvailable ? `${seatsCount} seats` : "Waitlist"}
+                {isAvailable ? t('cabinSelector.seats', { count: seatsCount }) : t('cabinSelector.waitlist')}
               </span>
             </button>
           );

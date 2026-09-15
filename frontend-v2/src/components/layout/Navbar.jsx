@@ -121,9 +121,9 @@ export default function Navbar() {
     navigate(targetPath);
     dispatch(logoutUser());
     if (isAdmin) {
-      toast.success("Signed out successfully.", { position: "top-right" });
+      toast.success(t('navbar.adminSignedOut'), { position: "top-right" });
     } else {
-      toast.success("You've been signed out.");
+      toast.success(t('navbar.signedOutSuccess'));
     }
   };
 
@@ -268,7 +268,7 @@ export default function Navbar() {
                         : "font-semibold text-slate-700 hover:text-slate-900"
                       }`}
                   >
-                    Flights
+                    {t('navbar.flights')}
                   </Link>
                   <Link
                     to="/my-bookings"
@@ -277,7 +277,7 @@ export default function Navbar() {
                         : "font-semibold text-slate-700 hover:text-slate-900"
                       }`}
                   >
-                    Bookings
+                    {t('navbar.bookings')}
                   </Link>
                 </div>
               )
@@ -291,7 +291,7 @@ export default function Navbar() {
                       : "font-semibold text-slate-700 hover:text-slate-900"
                     }`}
                 >
-                  Flights
+                  {t('navbar.flights')}
                 </Link>
               </div>
             )}
@@ -345,7 +345,7 @@ export default function Navbar() {
                   <div className="absolute right-0 top-[52px] md:top-[72px] w-52 bg-white backdrop-blur-xl border border-slate-200/60 shadow-2xl rounded-2xl p-2.5 animate-fade-in z-[9999]">
                     <div className="px-3.5 py-2 border-b border-slate-100">
                       <p className="text-sm font-bold text-slate-800 truncate">
-                        {profile?.username || (isAdmin ? "Admin" : "Passenger")}
+                        {profile?.username || (isAdmin ? t('navbar.admin') : t('navbar.passenger'))}
                       </p>
                       {profile?.email && (
                         <p className="text-xs text-slate-500 truncate">{profile.email}</p>
@@ -353,7 +353,7 @@ export default function Navbar() {
                       {isAdmin && (
                         <span className="inline-flex items-center gap-1 mt-1.5 text-[10px] font-bold uppercase tracking-wider text-amber-700 bg-amber-50 border border-amber-200 rounded-full px-2.5 py-0.5">
                           <span className="w-1 h-1 rounded-full bg-amber-500" />
-                          Admin
+                          {t('navbar.admin')}
                         </span>
                       )}
                     </div>
@@ -366,7 +366,7 @@ export default function Navbar() {
                           className="w-full flex items-center gap-2 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-100/80 rounded-xl transition-colors cursor-pointer text-left"
                         >
                           <span className="material-symbols-outlined text-sm">person</span>
-                          My Profile
+                          {t('navbar.myProfile')}
                         </Link>
                       </div>
                     )}
@@ -376,7 +376,7 @@ export default function Navbar() {
                       className="w-full flex items-center gap-2 px-3 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50 rounded-xl transition-colors cursor-pointer text-left"
                     >
                       <span className="material-symbols-outlined text-sm">logout</span>
-                      Sign Out
+                      {t('navbar.signOut')}
                     </button>
                   </div>
                 )}
@@ -387,7 +387,7 @@ export default function Navbar() {
                 onClick={() => navigate("/login", { state: { from: location } })}
                 className="btn-primary h-8 md:h-10 text-[10px] md:text-sm px-3 md:px-6 py-1.5 md:py-2.5 rounded-xl"
               >
-                {t("navbar.loginOrRegister", "Login or Register")}
+                {t("navbar.loginOrRegister")}
               </button>
             )}
 
@@ -441,14 +441,14 @@ export default function Navbar() {
                     <p className="text-xs font-bold text-slate-800 truncate">
                       {profile?.first_name ? `${profile.first_name} ${profile.last_name || ""}` : (profile?.username || "User")}
                     </p>
-                    <p className="text-[10px] text-slate-500 truncate">{profile?.email || (isAdmin ? "Admin Account" : "Passenger Account")}</p>
+                    <p className="text-[10px] text-slate-500 truncate">{profile?.email || (isAdmin ? t('navbar.adminAccount') : t('navbar.passengerAccount'))}</p>
                   </div>
                 </div>
               ) : (
                 <div className="mt-4 p-3 rounded-2xl bg-slate-100 flex items-center justify-between">
                   <div>
-                    <p className="text-xs font-bold text-slate-800">Welcome Guest</p>
-                    <p className="text-[10px] text-slate-500">Sign in to manage bookings</p>
+                    <p className="text-xs font-bold text-slate-800">{t('navbar.welcomeGuest')}</p>
+                    <p className="text-[10px] text-slate-500">{t('navbar.signInToManage')}</p>
                   </div>
                 </div>
               )}
@@ -464,7 +464,7 @@ export default function Navbar() {
                         }`}
                     >
                       <span className="material-symbols-outlined text-lg">flight_takeoff</span>
-                      Flights
+                      {t('navbar.flights')}
                     </Link>
 
                     <Link
@@ -474,7 +474,7 @@ export default function Navbar() {
                         }`}
                     >
                       <span className="material-symbols-outlined text-lg">confirmation_number</span>
-                      Bookings
+                      {t('navbar.bookings')}
                     </Link>
 
                     <Link
@@ -485,7 +485,7 @@ export default function Navbar() {
                     >
                       <div className="flex items-center gap-3">
                         <span className="material-symbols-outlined text-lg">notifications</span>
-                        Notifications
+                        {t('navbar.notifications')}
                       </div>
                       {unreadCount > 0 && (
                         <span className="bg-amber-500 text-white text-[10px] font-extrabold px-2 py-0.5 rounded-full">
@@ -501,7 +501,7 @@ export default function Navbar() {
                         }`}
                     >
                       <span className="material-symbols-outlined text-lg">person</span>
-                      My Profile
+                      {t('navbar.myProfile')}
                     </Link>
                   </>
                 )}
@@ -568,7 +568,7 @@ export default function Navbar() {
                         }`}
                     >
                       <span className="material-symbols-outlined text-lg">flight_takeoff</span>
-                      Flights
+                      {t('navbar.flights')}
                     </Link>
                   </>
                 )}
@@ -580,7 +580,7 @@ export default function Navbar() {
 
               {/* Language switcher */}
               <div className="flex items-center justify-between px-2">
-                <span className="text-xs font-bold text-slate-500">Language</span>
+                <span className="text-xs font-bold text-slate-500">{t('navbar.language')}</span>
                 <button
                   onClick={toggleLanguage}
                   className="btn-secondary h-8 flex items-center gap-1 text-[10px] py-1 px-3 rounded-xl cursor-pointer"
@@ -598,14 +598,14 @@ export default function Navbar() {
                   className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs font-bold text-rose-600 bg-rose-50 hover:bg-rose-100 transition-colors cursor-pointer"
                 >
                   <span className="material-symbols-outlined text-sm">logout</span>
-                  Sign Out
+                  {t('navbar.signOut')}
                 </button>
               ) : (
                 <button
                   onClick={() => { setIsMobileMenuOpen(false); navigate("/login", { state: { from: location } }); }}
                   className="btn-primary w-full py-2.5 rounded-xl text-xs font-bold"
                 >
-                  {t("navbar.loginOrRegister", "Login or Register")}
+                  {t("navbar.loginOrRegister")}
                 </button>
               )}
 

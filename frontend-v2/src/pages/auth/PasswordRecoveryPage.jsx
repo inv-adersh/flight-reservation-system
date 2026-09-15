@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect, useCallback } from "react";
 import { useLocation, useNavigate, Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { authAPI } from "@/services/auth-service/authService";
 import { handleApiError } from "@/utils/errorUtils";
 import toast from "react-hot-toast";

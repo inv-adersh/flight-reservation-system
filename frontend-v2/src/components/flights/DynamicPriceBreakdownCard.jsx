@@ -1,6 +1,8 @@
+import { useTranslation } from "react-i18next";
 import { formatCurrency as fmtCurr } from "@/utils/formatters";
 
 export default function DynamicPriceBreakdownCard({ flight, selectedCabin = "ECONOMY" }) {
+  const { t } = useTranslation();
   if (!flight) return null;
 
   const fareObj = flight.fares?.[selectedCabin];

@@ -1,15 +1,17 @@
 import ConfirmModal from "@/components/common/ConfirmModal";
+import { useTranslation } from "react-i18next";
 
 export default function LogoutConfirmModal({ isAdmin, onConfirm, onCancel }) {
+  const { t } = useTranslation();
   return (
     <ConfirmModal
       isOpen={true}
       variant="danger"
       icon="logout"
-      title="Sign out?"
-      description={`You'll need to sign in again to access ${isAdmin ? "the admin workspace" : "your account"}.`}
-      confirmText="Yes, sign out"
-      cancelText="Cancel"
+      title={t('auth.signOutPrompt')}
+      description={t('auth.signOutDesc')}
+      confirmText={t('auth.yesSignOut')}
+      cancelText={t('auth.cancel')}
       onConfirm={onConfirm}
       onCancel={onCancel}
     />

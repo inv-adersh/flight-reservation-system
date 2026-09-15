@@ -1,6 +1,8 @@
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 export default function TicketCard({ item, isPastView = false }) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   if (!item) return null;
@@ -59,8 +61,8 @@ export default function TicketCard({ item, isPastView = false }) {
     .filter(Boolean);
 
   const seatsText = seatNumbers.length > 0
-    ? seatNumbers.length === 1 ? `Seat ${seatNumbers[0]}` : `Seats ${seatNumbers.join(", ")}`
-    : "No seat selected";
+    ? seatNumbers.length === 1 ? t('ticketCard.seat', { num: seatNumbers[0] }) : t('ticketCard.seats', { nums: seatNumbers.join(", ") })
+    : t('ticketCard.noSeatSelected');
 
   const mealItems = [];
   passengers.forEach((p) => {
@@ -72,7 +74,7 @@ export default function TicketCard({ item, isPastView = false }) {
       }
     });
     if (meals.length === 0 && p.meal_preference && p.meal_preference !== "NONE") {
-      const prefLabel = p.meal_preference === "VEG" ? "Veg Meal" : p.meal_preference === "NON_VEG" ? "Non-Veg Meal" : p.meal_preference;
+      const prefLabel = p.meal_preference === "VEG" ? t('ticketCard.vegMeal') : p.meal_preference === "NON_VEG" ? t('ticketCard.nonVegMeal') : p.meal_preference;
       if (!mealItems.includes(prefLabel)) {
         mealItems.push(prefLabel);
       }
@@ -82,8 +84,8 @@ export default function TicketCard({ item, isPastView = false }) {
   const mealSummaryText = mealItems.length > 0
     ? mealItems.join(", ")
     : isMealIncluded
-      ? "Complimentary Meal"
-      : "No Meal Selected";
+      ? t('ticketCard.complimentaryMeal')
+      : t('ticketCard.noMealSelected');
 
   // Formats timestamp for black top header: e.g. 08:57 on 10th July, 2026
   const formatHeaderTimestamp = (isoStr) => {
@@ -140,7 +142,12 @@ export default function TicketCard({ item, isPastView = false }) {
 
   const stops = flight.stops;
   const stopCount = Array.isArray(stops) ? stops.length : typeof stops === "number" ? stops : 0;
-  const stopsStr = stopCount === 0 ? "Non-stop" : `${stopCount} Stop${stopCount > 1 ? "s" : ""}`;
+  const stopsStr =
+    stopCount === 0
+      ? t('flightItinerary.nonStop')
+      : stopCount === 1
+        ? t('flightItinerary.stop', { count: stopCount })
+        : t('flightItinerary.stops', { count: stopCount });
 
   const passengerCount = item.passengers?.length || item.seat_count || 1;
 
@@ -150,7 +157,7 @@ export default function TicketCard({ item, isPastView = false }) {
     if (flightStatus === "DELAYED") {
       return (
         <span className="bg-amber-400 text-amber-950 px-2 py-0.5 sm:py-1 rounded-xl text-[10px] font-bold flex items-center gap-1.5 shrink-0">
-          Delayed
+          {t('ticketCard.delayed')}
           <span className="material-symbols-outlined text-xs sm:text-sm select-none">schedule</span>
         </span>
       );
@@ -158,14 +165,14 @@ export default function TicketCard({ item, isPastView = false }) {
     if (flightStatus === "CANCELLED") {
       return (
         <span className="bg-rose-400 text-rose-950 px-2 py-0.5 sm:py-1 rounded-xl text-[10px] font-bold flex items-center gap-1.5 shrink-0">
-          Cancelled
+          {t('ticketCard.cancelled')}
           <span className="material-symbols-outlined text-xs sm:text-sm select-none">cancel</span>
         </span>
       );
     }
     return (
       <span className="bg-[#7ce47a] text-slate-950 px-2 py-0.5 sm:py-1 rounded-xl text-[10px] font-semibold flex items-center gap-1.5 shrink-0">
-        On time
+        {t('ticketCard.onTime')}
         <span className="material-symbols-outlined text-xs sm:text-sm select-none">flight</span>
       </span>
     );
@@ -177,7 +184,7 @@ export default function TicketCard({ item, isPastView = false }) {
     if (ticketStatus === "EXPIRED") {
       return (
         <span className="bg-slate-200 text-slate-700 border border-slate-300 px-2 py-0.5 sm:py-1 rounded-xl text-[10px] font-bold flex items-center gap-1.5 shrink-0">
-          Expired
+          {t('ticketCard.expired')}
           <span className="material-symbols-outlined text-xs sm:text-sm select-none">hourglass_disabled</span>
         </span>
       );
@@ -186,7 +193,7 @@ export default function TicketCard({ item, isPastView = false }) {
     if (ticketStatus === "CANCELLED") {
       return (
         <span className="bg-rose-100 text-rose-950 border border-rose-300 px-2 py-0.5 sm:py-1 rounded-xl text-[10px] font-bold flex items-center gap-1.5 shrink-0">
-          Cancelled
+          {t('ticketCard.cancelled')}
           <span className="material-symbols-outlined text-xs sm:text-sm select-none">cancel</span>
         </span>
       );
@@ -195,7 +202,7 @@ export default function TicketCard({ item, isPastView = false }) {
     if (isWaitlist) {
       return (
         <span className="bg-amber-100 text-amber-950 border border-amber-300 px-2 py-0.5 sm:py-1 rounded-xl text-[10px] font-bold flex items-center gap-1.5 shrink-0">
-          {item.queue_position ? `WL #${item.queue_position}` : "Waitlisted"}
+          {item.queue_position ? t('ticketCard.waitlistedPos', { pos: item.queue_position }) : t('ticketCard.waitlisted')}
           <span className="material-symbols-outlined text-xs sm:text-sm select-none">hourglass_top</span>
         </span>
       );
@@ -203,7 +210,7 @@ export default function TicketCard({ item, isPastView = false }) {
 
     return (
       <span className="bg-white text-slate-950 border border-slate-300/80 px-2 py-0.5 sm:py-1 rounded-xl text-[10px] font-bold flex items-center gap-1.5 shrink-0">
-        Confirmed
+        {t('ticketCard.confirmed')}
         <span className="material-symbols-outlined text-xs sm:text-sm select-none">check_circle</span>
       </span>
     );
@@ -240,10 +247,10 @@ export default function TicketCard({ item, isPastView = false }) {
       {/* Top Header Bar */}
       <div className="rounded-t-2xl md:rounded-t-3xl mx-auto bg-slate-950 text-white px-4 sm:px-6 pt-2 pb-6 flex items-center justify-between text-[10px] sm:text-xs font-semibold tracking-wide">
         <span className="text-slate-200">
-          {isWaitlist ? "Waitlist ID" : "Booking ID"} #{shortId}
+          {isWaitlist ? t('ticketCard.waitlistId') : t('ticketCard.bookingId')} #{shortId}
         </span>
         <span className="text-slate-300 font-medium truncate max-w-[200px] sm:max-w-none">
-          Booked at {headerTime}
+          {t('ticketCard.bookedAt', { time: headerTime })}
         </span>
       </div>
 
@@ -443,7 +450,7 @@ export default function TicketCard({ item, isPastView = false }) {
           {/* Bottom Bar: Status Badges */}
           <div className="flex items-center justify-between pt-2 border-t border-slate-100">
             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-              Status
+            {t('ticketCard.status')}
             </span>
 
             <div className="flex items-center gap-1.5">

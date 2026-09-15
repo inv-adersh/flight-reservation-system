@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { flightsAPI } from "@/services/flight-service/flightService";
+import { useTranslation } from "react-i18next";
 
 
 // This is a JavaScript object containing the UI configuration for each prediction direction.
@@ -8,19 +9,19 @@ const DIRECTION_CONFIG = {
     icon: "trending_up",
     color: "text-rose-600",
     bg: "bg-rose-50 border-rose-200",
-    label: "Price likely rising",
+    labelKey: "farePrediction.priceRising",
   },
   DECREASE: {
     icon: "trending_down",
     color: "text-emerald-600",
     bg: "bg-emerald-50 border-emerald-200",
-    label: "Price may drop",
+    labelKey: "farePrediction.priceDrop",
   },
   STABLE: {
     icon: "trending_flat",
     color: "text-slate-600",
     bg: "bg-slate-50 border-slate-200",
-    label: "Price is stable",
+    labelKey: "farePrediction.priceStable",
   },
 };
 
@@ -29,6 +30,7 @@ const DIRECTION_CONFIG = {
 // cabinClass: The cabin class for which the fare prediction is to be obtained.
 
 export default function FarePredictionBadge({ flightInstanceId, cabinClass }) {
+  const { t } = useTranslation();
     // State to store the fare prediction data.
   const [prediction, setPrediction] = useState(null);
    // State to track loading status.
@@ -85,10 +87,10 @@ export default function FarePredictionBadge({ flightInstanceId, cabinClass }) {
           {config.icon}
         </span>
         <span className={`text-sm font-bold ${config.color}`}>
-          {config.label}
+          {t(config.labelKey)}
         </span>
         <span className="ml-auto text-[11px] font-semibold text-slate-400">
-          {prediction.confidence}% confidence
+          {prediction.confidence}% {t('farePrediction.confidence')}
         </span>
       </div>
 
@@ -101,11 +103,11 @@ export default function FarePredictionBadge({ flightInstanceId, cabinClass }) {
       <div className="flex items-center gap-3 text-[11px] font-semibold text-slate-500">
         <span className="flex items-center gap-1">
           <span className="material-symbols-outlined text-[13px]">calendar_today</span>
-          {prediction.days_until_departure}d until departure
+          {prediction.days_until_departure}d {t('farePrediction.untilDeparture')}
         </span>
         <span className="flex items-center gap-1">
           <span className="material-symbols-outlined text-[13px]">airline_seat_recline_normal</span>
-          {prediction.occupancy_pct}% occupied
+          {prediction.occupancy_pct}% {t('farePrediction.occupied')}
         </span>
       </div>
     </div>

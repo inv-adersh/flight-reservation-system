@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 import { checkServerHealth } from "@/store/systemSlice";
 
 export default function ServerDownPage() {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const { isCheckingHealth } = useSelector((state) => state.system);
 

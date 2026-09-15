@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 export default function FlightBaggageMealIndicators({
   checkedBaggageKg = 20,
@@ -8,6 +9,7 @@ export default function FlightBaggageMealIndicators({
   compact = false,
   vertical = false,
 }) {
+  const { t } = useTranslation();
   return (
     <div
       className={`flex ${
@@ -17,25 +19,25 @@ export default function FlightBaggageMealIndicators({
       } ${className}`}
     >
       {/* Checked Baggage */}
-      <span className="flex items-center gap-1.5" title="Checked Baggage">
+      <span className="flex items-center gap-1.5" title={t('baggage.checkedBaggage')}>
         <span className="material-symbols-outlined text-xs text-emerald-600 select-none">
           work
         </span>
-        <span>{checkedBaggageKg} kg{vertical ? " Checked" : ""}</span>
+        <span>{checkedBaggageKg} kg{vertical ? ` ${t('baggage.checkedLabel')}` : ""}</span>
       </span>
 
       {/* Cabin Handbag */}
-      <span className="flex items-center gap-1.5" title="Cabin Handbag">
+      <span className="flex items-center gap-1.5" title={t('baggage.cabinHandbag')}>
         <span className="material-symbols-outlined text-xs text-sky-600 select-none">
           backpack
         </span>
-        <span>{handbagKg} kg{vertical ? " Cabin" : ""}</span>
+        <span>{handbagKg} kg{vertical ? ` ${t('baggage.cabinLabel')}` : ""}</span>
       </span>
 
       {/* Meal */}
       <span
         className="flex items-center gap-1.5"
-        title={isMealIncluded ? "Complimentary Meal Included" : "In-Flight Selection / No Meal"}
+        title={isMealIncluded ? t('baggage.complimentary') : t('baggage.inFlightSelection')}
       >
         <span
           className={`material-symbols-outlined text-xs select-none ${
@@ -44,7 +46,7 @@ export default function FlightBaggageMealIndicators({
         >
           {isMealIncluded ? "restaurant" : "no_meals"}
         </span>
-        <span>{isMealIncluded ? "Meal" : "No Meal"}</span>
+        <span>{isMealIncluded ? t('baggage.mealIncluded') : t('baggage.noMeal')}</span>
       </span>
     </div>
   );

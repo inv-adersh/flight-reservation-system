@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { loginUser, googleLoginUser, fetchProfile } from "@/store/authSlice";
 import { useGoogleLogin } from "@react-oauth/google";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 
 function GoogleIcon() {
   return (
@@ -21,6 +22,7 @@ export default function LoginPage() {
   const location = useLocation();
   const dispatch = useDispatch();
   const { loading } = useSelector((state) => state.auth);
+  const { t } = useTranslation();
 
   const redirectUrl = location.state?.from || "/";
 
@@ -74,8 +76,9 @@ export default function LoginPage() {
       }
       return;
     }
-
+    
     try {
+      
       const resultAction = await dispatch(
         loginUser({ credentials: { username: formData.username, password: formData.password } })
       );
@@ -126,7 +129,7 @@ export default function LoginPage() {
 
       {/* Header */}
       <div className="relative z-10 text-center mb-4">
-        <h2 className="text-xl font-bold text-slate-800">Sign in to your Account</h2>
+        <h2 className="text-xl font-bold text-slate-800">{t('auth.signInSubtitle')}</h2>
       </div>
 
       {/* Container Card */}
@@ -138,7 +141,7 @@ export default function LoginPage() {
           {/* Username/Email Input */}
           <div>
             <label className="block text-xs font-semibold text-slate-600 mb-2 ml-2">
-              Username or Email
+              {t('auth.usernameOrEmail')}
             </label>
             <input
               ref={usernameRef}
@@ -147,7 +150,7 @@ export default function LoginPage() {
               value={formData.username}
               onChange={handleChange}
               onBlur={handleBlur}
-              placeholder="Enter username or email"
+              placeholder={t('auth.placeholders.userEmail')}
               className="input-field"
             />
             {usernameError && (
@@ -161,13 +164,13 @@ export default function LoginPage() {
           <div>
             <div className="flex items-center justify-between mb-2 mr-1 ml-2">
               <label className="block text-xs font-semibold text-slate-600">
-                Password
+                {t('auth.password')}
               </label>
               <Link
                 to="/forgot-password"
                 className="text-xs font-semibold text-slate-500 hover:text-slate-800 hover:underline transition-colors"
               >
-                Forgot password?
+                {t('auth.forgotPassword')}
               </Link>
             </div>
             <div className="relative flex items-center">
@@ -178,7 +181,7 @@ export default function LoginPage() {
                 value={formData.password}
                 onChange={handleChange}
                 onBlur={handleBlur}
-                placeholder="Enter password"
+                placeholder={t('auth.placeholders.passEnter')}
                 className="input-field"
               />
               <button
@@ -205,11 +208,7 @@ export default function LoginPage() {
               disabled={loading}
               className="btn-primary px-5 py-2 rounded-xl text-sm"
             >
-              {loading ? (
-                "Signing in..."
-              ) : (
-                "Sign In"
-              )}
+              {loading ? t('auth.signingIn') : t('auth.signIn')}
             </button>
           </div>
         </form>
@@ -217,7 +216,7 @@ export default function LoginPage() {
         {/* Divider */}
         <div className="flex items-center gap-3 mt-5 mb-4">
           <span className="flex-1 h-px bg-slate-200" />
-          <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-widest">or</span>
+          <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-widest">{t('auth.orContinueWith')}</span>
           <span className="flex-1 h-px bg-slate-200" />
         </div>
 
@@ -229,15 +228,15 @@ export default function LoginPage() {
           className="w-full flex items-center justify-center gap-2.5 py-3 px-4 rounded-2xl border border-slate-200/80 bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 transition-all duration-150 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed shadow-sm cursor-pointer"
         >
           <GoogleIcon />
-          Continue with Google
+          {t('auth.continueWithGoogle')}
         </button>
 
         {/* Footer Link */}
         <div className="mt-8 text-center pt-5 border-t border-slate-100">
           <p className="text-xs font-semibold text-slate-500">
-            Don't have an account?{" "}
+            {t('auth.dontHaveAccount')}{" "}
             <Link to="/register" state={{ from: redirectUrl }} className="text-slate-900 font-bold hover:underline transition-all">
-              Sign Up
+              {t('auth.joinClub')}
             </Link>
           </p>
         </div>

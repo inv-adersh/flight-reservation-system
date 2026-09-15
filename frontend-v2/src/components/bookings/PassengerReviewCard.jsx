@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { formatCurrency as fmtCurr } from "@/utils/formatters";
 
 export default function PassengerReviewCard({
@@ -12,6 +13,8 @@ export default function PassengerReviewCard({
   extraBaggagePricePerKg = 0,
   currency = "INR",
 }) {
+  const { t } = useTranslation();
+
   const getSeatPositionLabel = (seat) => {
     if (!seat || typeof seat !== "object") return "";
     if (seat.extra_legroom) return "Extra Legroom";
@@ -32,7 +35,7 @@ export default function PassengerReviewCard({
       : "";
 
   const seatDisplay = seatNum
-    ? `Seat ${seatNum}${seatPosLabel ? ` (${seatPosLabel})` : ""}`
+    ? t('passenger.seatNum', { num: seatNum }) + (seatPosLabel ? ` (${seatPosLabel})` : "")
     : null;
 
   const compMealText =
@@ -47,12 +50,12 @@ export default function PassengerReviewCard({
   const genderRaw = (passenger?.gender || "").toUpperCase();
   const genderLabel =
     genderRaw === "F" || genderRaw === "FEMALE"
-      ? "Female"
+      ? t('passenger.female')
       : genderRaw === "M" || genderRaw === "MALE"
-        ? "Male"
+        ? t('passenger.male')
         : genderRaw === "O" || genderRaw === "OTHER"
-          ? "Other"
-          : "Passenger";
+          ? t('passenger.other')
+          : t('passenger.passengerNum', { num: index + 1 });
 
   const ageLabel = passenger?.age ? `${passenger.age} yrs` : null;
   const phoneLabel = passenger?.phone_number?.trim() ? passenger.phone_number.trim() : null;
@@ -76,7 +79,7 @@ export default function PassengerReviewCard({
           </div>
           <div className="min-w-0 flex-1">
             <h4 className="text-sm font-bold text-slate-950 break-words [overflow-wrap:anywhere]">
-              {passenger?.name?.trim() ? passenger.name.trim() : `Passenger ${index + 1}`}
+              {passenger?.name?.trim() ? passenger.name.trim() : t('passenger.passengerNum', { num: index + 1 })}
             </h4>
             <p className="text-xs text-slate-500 font-medium">
               {passengerMeta}
@@ -103,7 +106,7 @@ export default function PassengerReviewCard({
                 <span className="material-symbols-outlined text-sm text-blue-600">
                   event_seat
                 </span>
-                <span>Seat {seatNum} Selection ({seatPosLabel || "Reserved"})</span>
+                <span>{t('passenger.seatSelection', { num: seatNum, pos: seatPosLabel || "Reserved" })}</span>
               </div>
               <div className="receipt-item-price">
                 {formatCurrency(seatFee)}
@@ -121,7 +124,7 @@ export default function PassengerReviewCard({
                 <span>{compMealText}</span>
               </div>
               <span className="text-[10px] font-bold text-emerald-800 bg-emerald-100/90 px-2 py-0.5 rounded-md border border-emerald-200/80">
-                Included
+                {t('passenger.included')}
               </span>
             </div>
           )}
@@ -156,7 +159,7 @@ export default function PassengerReviewCard({
                 <span className="material-symbols-outlined text-sm text-indigo-600">
                   luggage
                 </span>
-                <span>+{extraBaggageKg} kg Extra Luggage</span>
+                <span>{t('baggage.extraLuggageRow', { kg: extraBaggageKg })}</span>
               </div>
               <div className="receipt-item-price">
                 {formatCurrency(extraBaggageCost)}

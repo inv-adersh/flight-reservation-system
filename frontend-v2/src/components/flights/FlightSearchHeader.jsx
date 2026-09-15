@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
+import { useTranslation } from "react-i18next";
 import DatePickerModal from "@/components/ui/DatePickerModal";
 import { fetchAirports } from "@/store/airportsSlice";
 import { resolveAirport, AIRPORT_MAP, getAirportInfo } from "@/utils/airportHelpers";
@@ -19,6 +20,7 @@ const FALLBACK_AIRPORTS = {
 };
 
 export default function FlightSearchHeader({ onSearchChange }) {
+  const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
 
   // Read URL params or fallback

@@ -4,12 +4,14 @@ import { useSelector } from "react-redux";
 import { bookingAPI } from "@/services/booking-service/bookingService";
 import { waitlistAPI } from "@/services/waitlist-service/waitlistService";
 import TicketCard from "@/components/bookings/TicketCard";
+import { useTranslation } from "react-i18next";
 
 export default function MyBookingsPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const auth = useSelector((state) => state?.auth) || {};
   const isAuthenticated = Boolean(auth.isAuthenticated || auth.token);
+  const { t } = useTranslation();
 
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -50,7 +52,7 @@ export default function MyBookingsPage() {
       } catch (err) {
         console.error("Error fetching bookings & waitlists:", err);
         if (isMounted) {
-          setError("Failed to load your bookings. Please try again.");
+          setError(t('booking.myBookings.loadError'));
         }
       } finally {
         if (isMounted) setLoading(false);
@@ -80,7 +82,7 @@ export default function MyBookingsPage() {
       {/* Header Container with Toggle Link */}
       <div className="flex flex-wrap items-center justify-between gap-4 mb-6 px-2">
         <h1 className="text-xl font-bold text-slate-950">
-          {showPastBookings ? "Past Bookings" : "My Bookings"}
+          {showPastBookings ? t('booking.myBookings.pastBookings') : t('booking.myBookings.title')}
         </h1>
 
         <button
@@ -92,8 +94,8 @@ export default function MyBookingsPage() {
             {showPastBookings ? "arrow_back" : "history"}
           </span>
           {showPastBookings
-            ? `View active bookings (${activeItems.length})`
-            : `View past bookings (${pastItems.length})`}
+            ? `${t('booking.myBookings.viewActive')} (${activeItems.length})`
+            : `${t('booking.myBookings.viewPast')} (${pastItems.length})`}
         </button>
       </div>
 
@@ -114,12 +116,12 @@ export default function MyBookingsPage() {
             {showPastBookings ? "history" : "airplane_ticket"}
           </span>
           <h3 className="text-base font-bold text-slate-900">
-            {showPastBookings ? "No Past Bookings" : "No Active Bookings"}
+            {showPastBookings ? t('booking.myBookings.noPastBookings') : t('booking.myBookings.noActiveBookings')}
           </h3>
           <p className="text-xs text-slate-500">
             {showPastBookings
-              ? "You don't have any cancelled or expired bookings."
-              : "You don't have any active flight bookings or waitlisted tickets."}
+              ? t('booking.myBookings.noPastBookingsDesc')
+              : t('booking.myBookings.noActiveBookingsDesc')}
           </p>
           <div className="flex items-center justify-center gap-3 pt-2">
             {!showPastBookings ? (
@@ -128,7 +130,7 @@ export default function MyBookingsPage() {
                 onClick={() => navigate("/flights")}
                 className="btn-primary text-slate-950 px-5 py-2.5 rounded-full text-xs font-bold shadow-2xs"
               >
-                Search Flights
+                {t('booking.myBookings.searchFlights')}
               </button>
             ) : (
               <button
@@ -136,7 +138,7 @@ export default function MyBookingsPage() {
                 onClick={() => setShowPastBookings(false)}
                 className="btn-primary text-slate-950 px-5 py-2.5 rounded-full text-xs font-bold shadow-2xs"
               >
-                Back to Active Bookings
+                {t('booking.myBookings.backToActive')}
               </button>
             )}
           </div>
