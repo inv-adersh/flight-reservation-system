@@ -25,7 +25,7 @@ const DIRECTION_CONFIG = {
   },
 };
 
-// This component accepts two props:
+// This component accepts two props
 // flightInstanceId: The ID of the flight instance to get the fare prediction for.
 // cabinClass: The cabin class for which the fare prediction is to be obtained.
 
