@@ -4,7 +4,7 @@ import FlightBaggageMealIndicators from "./FlightBaggageMealIndicators";
 import { formatCurrency as fmtCurr } from "@/utils/formatters";
 import { useTranslation } from "react-i18next";
 
-
+// flight card
 export default function FlightCard({ flight, selectedCabinClass = "Economy", onViewDetails, optimizationBadges = [], isHighlighted = false, compareMode = false }) {
   const dispatch = useDispatch();
   const selectedIds = useSelector((state) => state.comparison.selectedIds);
