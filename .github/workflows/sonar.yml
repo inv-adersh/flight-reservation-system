@@ -34,10 +34,15 @@ jobs:
           fi
           
           python -m pip install --only-binary :all: coverage==7.10.6
+          echo "===== TEST FILES ====="
+          find apps -type f \( -name "test*.py" -o -name "*test*.py" \)
 
           python -m coverage erase
 
           python -m coverage run manage.py test apps || true
+
+          echo "===== DJANGO TEST DISCOVERY ====="
+          python manage.py test apps --verbosity=2 || true  
 
           echo "===== COVERAGE REPORT ====="
           python -m coverage report
