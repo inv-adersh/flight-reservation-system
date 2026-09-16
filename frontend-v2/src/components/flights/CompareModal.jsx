@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { fetchComparison, clearComparison } from "@/store/comparisonSlice";
 import { formatCurrency } from "@/utils/formatters";
 
-// This function converts a relative logo path into a full URL.
+// This function converts a relative logo path into a full Url.
 const getLogoUrl = (url) => {
   if (!url) return null;
   if (url.startsWith("http://") || url.startsWith("https://")) return url;
