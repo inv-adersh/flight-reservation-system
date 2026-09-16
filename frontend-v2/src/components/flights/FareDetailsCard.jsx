@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { formatCurrency as fmtCurr } from "@/utils/formatters";
 
+// flightdetails
 export default function FareDetailsCard({
   flight,
   selectedCabin = "ECONOMY",
