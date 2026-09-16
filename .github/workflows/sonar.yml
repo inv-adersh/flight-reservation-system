@@ -26,6 +26,8 @@ jobs:
           python-version: '3.12'
       
       - name: Install Dependencies & Run Backend Coverage
+        env:
+          SECRET_KEY: test-secret-key-for-ci
         run: |
           cd backend
           python -m pip install --upgrade pip==25.3
