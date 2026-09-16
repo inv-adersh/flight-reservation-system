@@ -1,4 +1,6 @@
-import random
+import secrets
+
+rng = secrets.SystemRandom()
 from decimal import Decimal
 from datetime import datetime, date, time, timedelta
 from django.core.management.base import BaseCommand
@@ -671,12 +673,12 @@ class Command(BaseCommand):
 
         # Pick 15 flights specifically departing from DEL for the high-booking demo
         del_departures = [inst for inst in all_14_day_instances if inst.flight.origin_airport and inst.flight.origin_airport.iata_code == 'DEL']
-        high_booking_instances = random.sample(del_departures, min(len(del_departures), 15))
+        high_booking_instances = rng.sample(del_departures, min(len(del_departures), 15))
         low_booking_instances = [inst for inst in all_14_day_instances if inst not in high_booking_instances]
 
         # 1. High booking rate for demo flights (creates actual Booking records)
         for inst in high_booking_instances:
-            booking_rate = random.uniform(0.70, 0.95)
+            booking_rate = rng.uniform(0.70, 0.95)
             for cabin in [CabinClass.ECONOMY, CabinClass.BUSINESS, CabinClass.FIRST]:
                 seats = list(inst.seats.filter(seat_class=cabin, status=SeatStatus.AVAILABLE))
                 if not seats:
@@ -685,7 +687,7 @@ class Command(BaseCommand):
                 if num_to_book == 0:
                     continue
                 
-                seats_to_book = random.sample(seats, num_to_book)
+                seats_to_book = rng.sample(seats, num_to_book)
                 fare = inst.fares.filter(cabin_class=cabin).first()
                 if not fare:
                     continue
@@ -698,8 +700,8 @@ class Command(BaseCommand):
                             cabin_class=cabin, seat_count=1, total_price=fare.price
                         )
                         p = Passenger.objects.create(
-                            booking=b, name="Demo Passenger", age=random.randint(18, 60),
-                            gender=random.choice(["M", "F"]), phone_number="+1 555-0000",
+                            booking=b, name="Demo Passenger", age=rng.randint(18, 60),
+                            gender=secrets.choice(["M", "F"]), phone_number="+1 555-0000",
                             seat_number=s.seat_number, free_baggage_allowance_kg=Decimal("30.00")
                         )
                         Ticket.objects.create(
@@ -714,7 +716,7 @@ class Command(BaseCommand):
 
         # 2. Low booking rate for all other flights (only updates Seat & Fare objects to save time)
         for inst in low_booking_instances:
-            booking_rate = random.uniform(0.01, 0.10)
+            booking_rate = rng.uniform(0.01, 0.10)
             for cabin in [CabinClass.ECONOMY, CabinClass.BUSINESS, CabinClass.FIRST]:
                 seats = list(inst.seats.filter(seat_class=cabin, status=SeatStatus.AVAILABLE))
                 if not seats:
@@ -723,7 +725,8 @@ class Command(BaseCommand):
                 if num_to_book == 0:
                     continue
                 
-                seats_to_book = random.sample(seats, num_to_book)
+                seats_to_book = rng.sample(seats, num_to_book)
+
                 fare = inst.fares.filter(cabin_class=cabin).first()
                 if not fare:
                     continue

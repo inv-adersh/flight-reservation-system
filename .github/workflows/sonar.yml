@@ -36,6 +36,11 @@ jobs:
           python -m coverage run manage.py test apps || true
           python -m coverage xml -o coverage.xml
 
+      - name: Check coverage report
+        run: |
+          ls -lh backend/coverage.xml
+          grep -E "lines-valid|lines-covered|line-rate" backend/coverage.xml | head -1
+
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@ba3875ecf642b2129de2b589510c81a8b53dbf4e
         env:

@@ -1,4 +1,6 @@
-import random
+import secrets
+
+rng = secrets.SystemRandom()
 from datetime import datetime, date, time, timedelta
 from decimal import Decimal
 from django.core.management.base import BaseCommand
@@ -194,16 +196,17 @@ class Command(BaseCommand):
                         "scheduled_arrival": arr_dt,
                         "checkin_open": dep_dt - timedelta(hours=24),
                         "boarding_time": dep_dt - timedelta(minutes=45),
-                        "boarding_gate": f"G{random.randint(1, 20)}",
+                        "boarding_gate": f"G{rng.randint(1, 20)}",
                         "departure_terminal": "T3",
                         "arrival_terminal": "T1",
                     }
                 )
                 count_created += 1
                 
-                econ_seats = random.randint(30, 120)
-                biz_seats = random.randint(5, 20)
-                fst_seats = random.randint(1, 5)
+                econ_seats = rng.randint(30, 120)
+                biz_seats = rng.randint(5, 20)
+                fst_seats = rng.randint(1, 5)
+
 
                 # Fares
                 Fare.objects.update_or_create(
@@ -256,8 +259,8 @@ class Command(BaseCommand):
                     generate_seats_for_instance(inst)
                     seats_list = list(inst.seats.all())
                     if seats_list:
-                        booked_count = int(len(seats_list) * random.uniform(0.15, 0.5))
-                        booked_seats = random.sample(seats_list, booked_count)
+                        booked_count = int(len(seats_list) * rng.uniform(0.15, 0.5))
+                        booked_seats = rng.sample(seats_list, booked_count)
                         seat_ids = [s.id for s in booked_seats]
                         Seat.objects.filter(id__in=seat_ids).update(status=SeatStatus.BOOKED)
 

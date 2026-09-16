@@ -110,7 +110,8 @@ def generate_upcoming_instances(
                 sch_arr = timezone.make_aware(naive_arr) if timezone.is_naive(naive_arr) else naive_arr
 
                 with transaction.atomic():
-                    import random
+                    import secrets
+                    rng = secrets.SystemRandom()
                     
                     # Use route leg defaults if available, else fetch actual terminals if available
                     first_leg = route.legs.order_by("leg_order").first()
@@ -121,12 +122,12 @@ def generate_upcoming_instances(
                     
                     if not dep_term:
                         if first_leg and first_leg.departure_airport.terminals:
-                            dep_term = random.choice(first_leg.departure_airport.terminals)
+                            dep_term = secrets.choice(first_leg.departure_airport.terminals)
                         else:
                             dep_term = "T1"
                     if not arr_term:
                         if last_leg and last_leg.arrival_airport.terminals:
-                            arr_term = random.choice(last_leg.arrival_airport.terminals)
+                            arr_term = secrets.choice(last_leg.arrival_airport.terminals)
                         else:
                             arr_term = "T1"
 
@@ -138,7 +139,7 @@ def generate_upcoming_instances(
                             "aircraft": route_aircraft,
                             "scheduled_arrival": sch_arr,
                             "status": InstanceStatus.SCHEDULED,
-                            "boarding_gate": f"{random.choice(['A', 'B', 'C', 'D'])}{random.randint(1, 20)}",
+                            "boarding_gate": f"{secrets.choice(['A', 'B', 'C', 'D'])}{rng.randint(1, 20)}",
                             "departure_terminal": dep_term,
                             "arrival_terminal": arr_term,
                         },
