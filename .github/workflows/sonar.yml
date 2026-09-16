@@ -40,6 +40,7 @@ jobs:
         run: |
           ls -lh backend/coverage.xml
           grep -E "lines-valid|lines-covered|line-rate" backend/coverage.xml | head -1
+          grep -E '<class ' backend/coverage.xml | head -20
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@ba3875ecf642b2129de2b589510c81a8b53dbf4e
