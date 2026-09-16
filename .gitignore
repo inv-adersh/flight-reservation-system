@@ -51,3 +51,14 @@ frontend-v2/eslint-report.json
 frontend-v2/fix.py
 frontend-v2/parse_lint.cjs
 frontend-v2/parsed_lint.txt
+
+# Coverage reports
+coverage/
+.coverage
+htmlcov/
+coverage.xml
+*.lcov
+lcov.info
+
+# SonarLint local settings
+.sonarlint/
