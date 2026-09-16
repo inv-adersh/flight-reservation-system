@@ -32,9 +32,22 @@ jobs:
           if [ -f requirements.txt ]; then
             python -m pip install --only-binary :all: -r requirements.txt 
           fi
-          python -m pip install coverage==7.10.6
+          
+          python -m pip install --only-binary :all: coverage==7.10.6
+
+          python -m coverage erase
+
           python -m coverage run manage.py test apps || true
-          python -m coverage xml -o coverage.xml
+
+          echo "===== COVERAGE REPORT ====="
+          python -m coverage report
+
+          echo "===== COVERAGE DEBUG ====="
+          python -m coverage debug data
+
+          python -m coverage xml -o coverage.xml  
+
+
 
       - name: Check coverage report
         run: |
