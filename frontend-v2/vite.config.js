@@ -7,16 +7,29 @@ export default defineConfig({
   plugins: [
     react(),
   ],
+
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
     },
   },
+
   server: {
     allowedHosts: true,
     proxy: {
       '/api': 'http://127.0.0.1:8000'
     }
+  },
+
+  test: {
+    environment: 'jsdom',
+    globals: true,
+    setupFiles: './src/test/setup.js',
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'html', 'lcov'],
+      reportsDirectory: './coverage',
+    },
   },
 })
 // Touch to reload tailwind config

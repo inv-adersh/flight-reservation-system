@@ -36,7 +36,7 @@ function makeStore(extraReducers = {}) {
 // ── adminSlices smoke test ────────────────────────────────────────────────────
 describe('adminSlices — exports', () => {
   it('exports all expected thunks without throwing', async () => {
-    const mod = await import('@/store/adminSlices');
+    const mod = await import('@/admin/_core/store/adminSlices');
 
     // country slice
     expect(typeof mod.fetchCountries).toBe('function');
@@ -129,6 +129,7 @@ describe('AdminCrudPage', () => {
             fields: FIELDS,
             emptyForm: EMPTY_FORM,
             thunks: fakeThunks,
+            getDeleteDetails: () => null,
           }}
         />
       </Wrapper>
@@ -148,6 +149,7 @@ describe('AdminCrudPage', () => {
             fields: FIELDS,
             emptyForm: EMPTY_FORM,
             thunks: fakeThunks,
+            getDeleteDetails: () => null,
           }}
         />
       </Wrapper>
@@ -167,6 +169,7 @@ describe('AdminCrudPage', () => {
             fields: FIELDS,
             emptyForm: EMPTY_FORM,
             thunks: fakeThunks,
+            getDeleteDetails: () => null,
           }}
         />
       </Wrapper>
@@ -189,6 +192,7 @@ describe('AdminCrudPage', () => {
             fields: FIELDS,
             emptyForm: EMPTY_FORM,
             thunks: fakeThunks,
+            getDeleteDetails: () => null,
           }}
         />
       </Wrapper>
@@ -213,7 +217,7 @@ vi.mock('react-router-dom', async () => {
 
 describe('Navbar — admin mode', () => {
   it('does NOT contain a "Flights (Legacy)" link', async () => {
-    const { Navbar } = await import('@/components/layout/Navbar');
+    const { default: Navbar } = await import('@/components/layout/Navbar');
     // const store = makeStore();
     // Patch auth state to admin
     const adminStore = configureStore({
@@ -233,7 +237,7 @@ describe('Navbar — admin mode', () => {
   });
 
   it('contains the Analytics link for admins', async () => {
-    const { Navbar } = await import('@/components/layout/Navbar');
+    const { default: Navbar } = await import('@/components/layout/Navbar');
     const adminStore = configureStore({
       reducer: {
         auth: () => ({ isAuthenticated: true, isAdmin: true, profile: { first_name: 'Admin', username: 'admin' } }),
