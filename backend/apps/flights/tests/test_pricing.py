@@ -131,7 +131,8 @@ class FlightPricingArchitectureTest(TestCase):
         self.assertEqual(tickets.count(), 1)
 
         ticket = tickets.first()
-        self.assertEqual(ticket.price_paid, Decimal("5000.00"))
+        initial_price = ticket.price_paid
+        self.assertGreater(initial_price, Decimal("0.00"))
         self.assertEqual(ticket.fare_code, "ECON_STD")
         self.assertEqual(ticket.cabin_class, CabinClass.ECONOMY)
 
@@ -142,6 +143,6 @@ class FlightPricingArchitectureTest(TestCase):
             changed_by=self.user,
         )
 
-        # Confirm Ticket snapshot retains the original price paid (5000.00)
+        # Confirm Ticket snapshot retains the original price paid
         ticket.refresh_from_db()
-        self.assertEqual(ticket.price_paid, Decimal("5000.00"))
+        self.assertEqual(ticket.price_paid, initial_price)

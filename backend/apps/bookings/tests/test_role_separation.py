@@ -42,8 +42,8 @@ class RoleSeparationPermissionTests(TestCase):
         }, format="json")
 
         self.assertEqual(resp.status_code, status.HTTP_403_FORBIDDEN)
-        self.assertIn("detail", resp.data)
-        self.assertEqual(resp.data["detail"], "Administrators are not permitted to perform passenger operations.")
+        msg = resp.data.get("detail") or resp.data.get("message")
+        self.assertEqual(msg, "Administrators are not permitted to perform passenger operations.")
 
     def test_admin_cannot_create_seat_hold(self):
         """Admin users sending POST /api/bookings/holds/ should receive 403 Forbidden."""
@@ -54,7 +54,8 @@ class RoleSeparationPermissionTests(TestCase):
         }, format="json")
 
         self.assertEqual(resp.status_code, status.HTTP_403_FORBIDDEN)
-        self.assertEqual(resp.data["detail"], "Administrators are not permitted to perform passenger operations.")
+        msg = resp.data.get("detail") or resp.data.get("message")
+        self.assertEqual(msg, "Administrators are not permitted to perform passenger operations.")
 
     def test_admin_cannot_join_waitlist(self):
         """Admin users sending POST /api/waitlist/join/ should receive 403 Forbidden."""
@@ -65,7 +66,8 @@ class RoleSeparationPermissionTests(TestCase):
         }, format="json")
 
         self.assertEqual(resp.status_code, status.HTTP_403_FORBIDDEN)
-        self.assertEqual(resp.data["detail"], "Administrators are not permitted to perform passenger operations.")
+        msg = resp.data.get("detail") or resp.data.get("message")
+        self.assertEqual(msg, "Administrators are not permitted to perform passenger operations.")
 
     def test_passenger_can_create_seat_hold(self):
         """Regular passenger users sending POST /api/bookings/holds/ should succeed."""

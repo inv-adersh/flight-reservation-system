@@ -63,12 +63,14 @@ class MealsAndBaggageApiTests(TestCase):
             extra_baggage_price_per_kg=Decimal("1000.00"),
             extra_baggage_currency="INR",
         )
+        dep = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=10)
+        arr = dep + datetime.timedelta(hours=8)
         self.instance = FlightInstance.objects.create(
             flight=self.route,
-            date=datetime.date(2026, 9, 1),
+            date=dep.date(),
             aircraft=self.aircraft,
-            scheduled_departure="2026-09-01T10:00:00Z",
-            scheduled_arrival="2026-09-01T18:00:00Z",
+            scheduled_departure=dep,
+            scheduled_arrival=arr,
         )
         Seat.objects.create(flight_instance=self.instance, seat_number="1A", seat_class="ECONOMY", status="AVAILABLE")
 

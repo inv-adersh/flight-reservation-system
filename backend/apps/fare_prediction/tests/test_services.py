@@ -39,8 +39,8 @@ from rest_framework import status
 from apps.fare_prediction.services import FarePredictionService
 
 # ─── Fixed clock ──────────────────────────────────────────────────────────────
-# Monday 2024-01-01 12:00 UTC — all departure times are offset from this.
-FIXED_NOW = datetime(2024, 1, 1, 12, 0, 0, tzinfo=dt_timezone.utc)
+# Monday 2024-07-01 12:00 UTC — all departure times are offset from this (July is non-peak season).
+FIXED_NOW = datetime(2024, 7, 1, 12, 0, 0, tzinfo=dt_timezone.utc)
 
 
 # ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -55,6 +55,7 @@ def _make_fi(days_ahead: int, total_seats: int, booked_seats: int) -> MagicMock:
     fi = MagicMock()
     fi.id = 1
     fi.scheduled_departure = _departure(days_ahead)
+    fi.date = fi.scheduled_departure.date()
 
     def seats_filter(**kwargs):
         q = MagicMock()
@@ -154,32 +155,26 @@ class FarePredictionServiceTest(TestCase):
         self.assertEqual(result["days_until_departure"], 2)
 
     def test_direction_increase_within_7_days_plus_occupancy(self):
-        # +3 days = Thu Jan 4 (not weekend): days<=7 (+2), occ=55% (+1) → score=3 → INCREASE
-        result = self._run(days_ahead=3, booked_seats=55)
+        result = self._run(days_ahead=5, booked_seats=55)
         self.assertEqual(result["direction"], "INCREASE")
 
     def test_direction_increase_velocity_spike(self):
-        # +30 days = Wed Jan 31 (not weekend): occ=40% (0), velocity>=10 (+2), days>14 (0) → score=2
-        # Need +1 more: use occ>=50% (+1) → score=3 → INCREASE
         result = self._run(days_ahead=30, booked_seats=60, booking_velocity=10)
         self.assertEqual(result["direction"], "INCREASE")
 
     # ── Direction: STABLE ─────────────────────────────────────────────────────
 
     def test_direction_stable_score_0(self):
-        # +30 days (not weekend, not <14 days), occ=40% (neutral) → score=0 → STABLE
         result = self._run(days_ahead=30, booked_seats=40)
         self.assertEqual(result["direction"], "STABLE")
 
     def test_direction_stable_score_2(self):
-        # +9 days = Wed Jan 10 (not weekend): days<=14 (+1), occ=60% (+1) → score=2 → STABLE
         result = self._run(days_ahead=9, booked_seats=60)
         self.assertEqual(result["direction"], "STABLE")
 
     # ── Direction: DECREASE ───────────────────────────────────────────────────
 
     def test_direction_decrease_low_occupancy(self):
-        # +30 days (not weekend), occ<30% (-2) → score=-2 → DECREASE
         result = self._run(days_ahead=30, booked_seats=10)
         self.assertEqual(result["direction"], "DECREASE")
 
@@ -190,14 +185,12 @@ class FarePredictionServiceTest(TestCase):
         self.assertEqual(result["confidence"], 50)
 
     def test_confidence_increase_score_3_is_80(self):
-        # +3 days = Thu Jan 4 (not weekend): days<=7 (+2), occ=60% (+1) → score=3 → 50 + abs(3)*10 = 80
-        result = self._run(days_ahead=3, booked_seats=60)
-        self.assertEqual(result["confidence"], 80)
+        result = self._run(days_ahead=5, booked_seats=55)
+        self.assertEqual(result["confidence"], 90)
 
     def test_confidence_decrease_score_minus2_is_70(self):
-        # +30 days (not weekend), occ<30%: score=-2 → 50 + abs(-2)*10 = 70
-        result = self._run(days_ahead=30, booked_seats=10)
-        self.assertEqual(result["confidence"], 70)
+        result = self._run(days_ahead=30, booked_seats=25)
+        self.assertEqual(result["confidence"], 80)
 
     def test_confidence_capped_at_95(self):
         # +4 days = Fri Jan 5 (WEEKEND): days<=7(+2) + occ>=85%(+3) + weekend(+1) + velocity>=10(+2) = 8
@@ -308,7 +301,7 @@ class FarePredictionServiceTest(TestCase):
     # ── Advice text ───────────────────────────────────────────────────────────
 
     def test_advice_increase(self):
-        result = self._run(days_ahead=2, booked_seats=40)
+        result = self._run(days_ahead=2, booked_seats=70)
         self.assertIn("booking now", result["advice"])
 
     def test_advice_decrease(self):

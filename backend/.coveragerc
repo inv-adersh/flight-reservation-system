@@ -1,0 +1,18 @@
+[run]
+source = apps
+omit =
+    */migrations/*
+    */tests/*
+    */test_*.py
+    */*_test.py
+    */management/commands/*
+    manage.py
+    generate_mermaid.py
+    populate_airline_logos.py
+
+[report]
+exclude_lines =
+    pragma: no cover
+    def __repr__
+    raise NotImplementedError
+    if __name__ == .__main__.:

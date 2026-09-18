@@ -23,7 +23,7 @@ class ChangePasswordAPITests(APITestCase):
             "username": "testuser",
             "password": "TestPassword123!"
         }, format="json")
-        self.access_token = login_response.data["access"]
+        self.access_token = login_response.cookies["access_token"].value if "access_token" in login_response.cookies else login_response.data.get("access")
         self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {self.access_token}")
 
     def test_change_password_success(self):
@@ -76,8 +76,9 @@ class ChangePasswordAPITests(APITestCase):
         self.assertIn("new_password", response.data.get("errors", {}))
 
     def test_change_password_unauthenticated(self):
-        # Remove credentials
+        # Remove credentials and cookies
         self.client.credentials()
+        self.client.cookies.clear()
         payload = {
             "old_password": "TestPassword123!",
             "new_password": "NewTestPassword123!"

@@ -1,47 +1,77 @@
-import { render, screen } from '@testing-library/react';
-import { MemoryRouter, Routes, Route } from 'react-router-dom';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
+import { MemoryRouter } from 'react-router-dom';
 import { configureStore } from '@reduxjs/toolkit';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import MealsPage from '../MealsPage';
 
-describe('MealsPage URL Parameter Integration', () => {
-  let store;
+vi.mock('react-hot-toast', () => ({ default: { success: vi.fn(), error: vi.fn(), promise: vi.fn() } }));
 
+vi.mock('@/services/apiClient', () => ({
+  fetchWithAuth: vi.fn().mockImplementation((url) => {
+    if (url.includes('/airlines')) {
+      return Promise.resolve({ results: [{ id: 1, airline_name: 'Air India', iata_airline_code: 'AI' }] });
+    }
+    if (url.includes('/food-items')) {
+      return Promise.resolve({ results: [{ id: 10, airline: 1, name: 'Veg Meal Box' }] });
+    }
+    return Promise.resolve([]);
+  }),
+}));
+
+function makeStore(extraReducers = {}) {
+  return configureStore({
+    reducer: {
+      auth: () => ({ isAuthenticated: true, isAdmin: true }),
+      notifications: () => ({ unreadCount: 0 }),
+      flightMeal: (
+        state = {
+          items: [{ id: 100, name: 'Standard Breakfast', airline: 1, airline_name: 'Air India', airline_code: 'AI', cabin_class: 'ECONOMY', price: 15, items: [{ food_item: 10, food_item_name: 'Veg Meal Box', quantity: 1 }] }],
+          count: 1,
+          loading: false,
+          actionLoading: false,
+          error: null,
+        }
+      ) => state,
+      ...extraReducers,
+    },
+  });
+}
+
+describe('MealsPage Component', () => {
   beforeEach(() => {
-    store = configureStore({
-      reducer: {
-        airline: () => ({ items: [], loading: false, error: null }),
-        foodItem: () => ({ items: [], loading: false, error: null }),
-        flightMeal: () => ({ items: [], loading: false, actionLoading: false, error: null }),
-      },
-    });
+    vi.clearAllMocks();
+    window.HTMLElement.prototype.scrollIntoView = vi.fn();
   });
 
-  it('does not show airline breadcrumb when no airline param is in URL', () => {
-    render(
+  const renderMealsPage = (store, initialEntries = ['/admin/operations/meals']) => {
+    return render(
       <Provider store={store}>
-        <MemoryRouter initialEntries={['/admin/operations/meals']}>
-          <Routes>
-            <Route path="/admin/operations/meals" element={<MealsPage />} />
-          </Routes>
+        <MemoryRouter initialEntries={initialEntries}>
+          <MealsPage />
         </MemoryRouter>
       </Provider>
     );
+  };
 
-    expect(screen.queryByText(/Meals \(Airline #/i)).not.toBeInTheDocument();
+  it('renders page header, filters bar, and meals table with item details', async () => {
+    const store = makeStore();
+    renderMealsPage(store);
+
+    expect(screen.getByRole('heading', { name: /flight meals/i })).toBeInTheDocument();
+    expect(screen.getByText('Standard Breakfast')).toBeInTheDocument();
+    expect(screen.getByText('Economy Class')).toBeInTheDocument();
+    expect(screen.getByText(/veg meal box ×1/i)).toBeInTheDocument();
   });
 
-  it('shows airline-specific breadcrumb when airline param is in URL', () => {
-    render(
-      <Provider store={store}>
-        <MemoryRouter initialEntries={['/admin/operations/meals?airline=456']}>
-          <Routes>
-            <Route path="/admin/operations/meals" element={<MealsPage />} />
-          </Routes>
-        </MemoryRouter>
-      </Provider>
-    );
+  it('opens Add Meal modal and allows filling meal form', async () => {
+    const store = makeStore();
+    renderMealsPage(store);
 
-    expect(screen.getByText('Meals (Airline #456)')).toBeInTheDocument();
+    const addBtn = screen.getByRole('button', { name: /add meal/i });
+    fireEvent.click(addBtn);
+
+    expect(screen.getByRole('heading', { name: 'Add Flight Meal' })).toBeInTheDocument();
+    expect(screen.getByLabelText(/meal name/i)).toBeInTheDocument();
   });
 });

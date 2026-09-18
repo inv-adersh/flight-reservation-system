@@ -35,7 +35,7 @@ class ProfileAPITests(APITestCase):
             "password": "TestPassword123!"
         }, format="json")
         self.assertEqual(login_response.status_code, status.HTTP_200_OK)
-        access_token = login_response.data["access"]
+        access_token = login_response.cookies["access_token"].value if "access_token" in login_response.cookies else login_response.data.get("access")
         
         # Authenticate
         self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {access_token}")

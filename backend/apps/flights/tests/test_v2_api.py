@@ -197,8 +197,8 @@ class FlightV2APITest(TestCase):
         
         response = self.client.get(f"{url}?flight_instance={self.instance.id}")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['count'], 1)
-        self.assertEqual(response.data['results'][0]['seat_number'], "1A")
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]['seat_number'], "1A")
 
     def test_meals_airline_and_cabin_filtering(self):
         """Test filtering meals by airline and cabin class."""
